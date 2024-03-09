@@ -40,4 +40,24 @@ contract RevenueShare is ERC20, ReentrancyGuard, Ownable {
         _mint(msg.sender, bondTokensToIssue);
     }
 
+    function _update(address from, address to, uint256 amount) internal override {
+        require(from == address(0), "Tokens are non-transferrable.");
+
+        super._update(from, to, amount);
+
+        if (amount > 0) {
+            if (to != address(0) && balanceOf(to) == amount) {
+                addHolder(to);
+            }
+        }
+    }
+
+    function addHolder(address holder) private {
+        if (!isHolder[holder]) {
+            holders.push(holder);
+            isHolder[holder] = true;
+            holderIndex[holder] = holders.length - 1;
+        }
+    }
+
 }
