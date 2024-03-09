@@ -3,6 +3,9 @@ import { Button } from "@/ui/button";
 import { Separator } from "@/ui/separator";
 import { useMode } from "@/app/contexts/ModeContext";
 import { useRouter } from "next/navigation";
+import React from "react";
+import { FunctionComponent } from "react";
+import { useWallet } from "@/app/contexts/WalletContext";
 
 export function Sidebar() {
   const { mode, setMode } = useMode();
@@ -28,10 +31,15 @@ export function Sidebar() {
               router.push(targetPath);
             }}
           >
-            <h2 className="px-4 text-lg font-semibold tracking-tight">
-              My {mode === "Fan" ? "Creators" : "Fans"}
-            </h2>
-            <p className="italic px-4">{mode} View</p>
+            <div className="px-4 ">
+              <h2 className="text-lg font-semibold tracking-tight">
+                My {mode === "Fan" ? "Creators" : "Fans"}
+              </h2>
+              <p className="italic">{mode} View</p>
+              <div className="py-3">
+                <ConnectWalletButton></ConnectWalletButton>
+              </div>
+            </div>
           </div>
 
           <Separator className="horizontal my-2"></Separator>
@@ -84,6 +92,31 @@ export function Sidebar() {
     </div>
   );
 }
+
+const ConnectWalletButton: FunctionComponent = () => {
+  const { walletButtonText, isWalletConnected, handleWalletLink } = useWallet();
+
+  function formatWalletAddress(address: string) {
+    if (!address || address.length < 8) return address;
+    const start = address.substring(0, 5);
+    const end = address.substring(address.length - 10);
+    return `${start}...${end}`;
+  }
+
+  return (
+    <Button
+      type="button"
+      onClick={handleWalletLink}
+      disabled={isWalletConnected}
+    >
+      <p className="text-xs">
+        {isWalletConnected
+          ? formatWalletAddress(walletButtonText)
+          : walletButtonText}
+      </p>
+    </Button>
+  );
+};
 
 const fan_routes: string[] = ["/fan/discover"];
 const creator_routes: string[] = [""];

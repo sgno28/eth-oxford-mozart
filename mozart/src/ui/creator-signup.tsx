@@ -64,14 +64,6 @@ export function CreatorSignup() {
         setWalletAddress(accounts[0]); // Update the walletAddress state
         setIsWalletConnected(true);
         setWalletButtonText("Wallet Connected");
-        if (isSpotifyConnected && spotifyProfile) {
-          addCreator({
-            spotifyId: spotifyProfile.spotifyId,
-            name: spotifyProfile.displayName,
-            image: spotifyProfile.profileImage,
-            walletAddress: accounts[0],
-          });
-        }
       } catch (error) {
         console.error("Error connecting to wallet:", error);
       }
@@ -80,7 +72,7 @@ export function CreatorSignup() {
     }
   };
 
-  const onSubmit = (event) => {
+  const onSubmit = (event: any) => {
     event.preventDefault(); // Prevent form from submitting
     console.log("Form submission logic placeholder.");
   };
