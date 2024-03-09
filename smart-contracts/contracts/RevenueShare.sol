@@ -8,10 +8,9 @@ import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Capped.sol";
 
 contract RevenueShare is ERC20, ERC20Capped, ReentrancyGuard, Ownable {
     address public musician;
-    uint256 public rate; 
-    uint256 public bondPrice; 
+    uint256 public bondPrice;
     uint256 public expiryDate;
-    uint256 public lastCouponPayment; 
+    uint256 public lastCouponPayment;
     uint256 public couponInterval;
 
     address[] private holders;
@@ -19,11 +18,10 @@ contract RevenueShare is ERC20, ERC20Capped, ReentrancyGuard, Ownable {
     mapping(address => uint256) private holderIndex;
 
     event RevenueDeposited(uint256 amount);
-    
+
     constructor(
         string memory name,
         string memory symbol,
-        uint256 _rate,
         uint256 _bondPrice,
         uint256 _expiryDate,
         uint256 _couponIntervalMonths,
@@ -31,23 +29,23 @@ contract RevenueShare is ERC20, ERC20Capped, ReentrancyGuard, Ownable {
     ) ERC20(name, symbol) ERC20Capped(_supplyCap) Ownable(msg.sender) {
         require(_expiryDate > block.timestamp, "Expiry date must be in the future.");
         musician = msg.sender;
-        rate = _rate;
         bondPrice = _bondPrice;
         expiryDate = _expiryDate;
         couponInterval = _couponIntervalMonths * 30 days;
         lastCouponPayment = block.timestamp;
     }
 
-    function buyBondTokens() public payable nonReentrant {
-        require(msg.value == bondPrice, "Must pay the exact bond price.");
-        uint256 bondTokensToIssue = bondPrice / rate;
-        _mint(msg.sender, bondTokensToIssue);
+    function buyBondTokens(uint256 numberOfBonds) public payable nonReentrant {
+        uint256 totalCost = bondPrice * numberOfBonds;
+        require(msg.value == totalCost, "Must pay the exact price for the specified number of bonds.");
+
+        _mint(msg.sender, numberOfBonds);
     }
 
     function depositRevenue() public payable nonReentrant onlyOwner {
         emit RevenueDeposited(msg.value);
     }
-    
+
     function distributeCoupon() public onlyOwner nonReentrant {
         require(block.timestamp >= lastCouponPayment + couponInterval, "Coupon payment not due yet.");
         require(block.timestamp < expiryDate, "Cannot distribute coupons after bond expiry.");
@@ -72,7 +70,6 @@ contract RevenueShare is ERC20, ERC20Capped, ReentrancyGuard, Ownable {
 
     function _update(address from, address to, uint256 amount) internal override(ERC20, ERC20Capped) {
         require(from == address(0), "Tokens are non-transferrable.");
-
         super._update(from, to, amount);
 
         if (amount > 0) {
@@ -89,5 +86,4 @@ contract RevenueShare is ERC20, ERC20Capped, ReentrancyGuard, Ownable {
             holderIndex[holder] = holders.length - 1;
         }
     }
-
 }
