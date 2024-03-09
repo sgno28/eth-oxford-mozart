@@ -43,14 +43,27 @@ export function Sidebar({ mode, onSetMode }: SidebarProps) {
           </div>
         </div>
       </div>
-      <div className="px-3 py-6 justify-center">
-        <Button
+      <div className="px-3 py-6 flex justify-center items-center">
+        <p className="px-2">Switch Mode</p>
+        <div
           onClick={toggleMode}
-          variant="secondary"
-          className="justify-center"
+          className="border rounded-md cursor-pointer overflow-hidden flex"
         >
-          {mode === "Fan" ? "Creator" : "Fan"}
-        </Button>
+          <div
+            className={`flex-1 text-center py-2 px-2 ${
+              mode === "Fan" ? "bg-blue-500 text-white" : "text-gray-800"
+            }`}
+          >
+            Fan
+          </div>
+          <div
+            className={`flex-1 text-center py-2 px-2 ${
+              mode === "Creator" ? "bg-blue-500 text-white" : "text-gray-800"
+            }`}
+          >
+            Creator
+          </div>
+        </div>
       </div>
     </div>
   );
