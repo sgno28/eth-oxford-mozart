@@ -1,14 +1,23 @@
+"use client";
 import { Button } from "@/ui/button";
 import { Separator } from "@/ui/separator";
-
+import { useMode } from "@/app/contexts/ModeContext";
+import { useRouter } from "next/navigation";
 interface SidebarProps extends React.HTMLAttributes<HTMLDivElement> {
-  mode: string;
-  onSetMode: (value: "Fan" | "Creator") => void;
+  sideBarRoutes: string[];
 }
-export function Sidebar({ mode, onSetMode }: SidebarProps) {
+
+export function Sidebar({ sideBarRoutes }: SidebarProps) {
+  const { mode, setMode } = useMode();
+  const router = useRouter();
+
   const toggleMode = () => {
     const newMode = mode === "Fan" ? "Creator" : "Fan";
-    onSetMode(newMode);
+    setMode(newMode);
+
+    // Use the useRouter hook for client-side redirection
+    const targetPath = newMode === "Fan" ? "/fan" : "/creator";
+    router.push(targetPath);
   };
 
   return (
