@@ -19,7 +19,7 @@ export function CreatorSignup() {
     null
   );
   const { walletButtonText, isWalletConnected, handleWalletLink } = useWallet();
-  
+
   useEffect(() => {
     const code = new URLSearchParams(window.location.search).get("code");
     if (code && !isSpotifyConnected && !spotifyProfile) {
@@ -37,7 +37,7 @@ export function CreatorSignup() {
           const newUrl = window.location.pathname;
           window.history.pushState({}, "", newUrl);
         }
-        if (isSpotifyConnected && profile) {
+        if (isSpotifyConnected && profile && isWalletConnected) {
           console.log("I have penetrated");
           console.log(profile);
           addCreator({
@@ -45,7 +45,7 @@ export function CreatorSignup() {
             name: profile.displayName,
             start_date: null,
             followers: null,
-            web3_wallet: accounts[0],
+            web3_wallet: walletButtonText,
             bond: null,
             image: profile.image,
           });
