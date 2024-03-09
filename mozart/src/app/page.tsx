@@ -2,8 +2,8 @@
 import { Separator } from "@/ui/separator";
 import { Sidebar } from "@/ui/sidebar";
 import { useState } from "react";
-import FanPage from "./fan-ui/page";
-import CreatorPage from "./creator-ui/page";
+import FanPage from "./fan/page";
+import CreatorPage from "./creator/page";
 
 export default function HomePage() {
   const [mode, setMode] = useState("Fan");
