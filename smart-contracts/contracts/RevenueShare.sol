@@ -18,6 +18,8 @@ contract RevenueShare is ERC20, ERC20Capped, ReentrancyGuard, Ownable {
     mapping(address => bool) private isHolder;
     mapping(address => uint256) private holderIndex;
 
+    event RevenueDeposited(uint256 amount);
+    
     constructor(
         string memory name,
         string memory symbol,
@@ -40,6 +42,10 @@ contract RevenueShare is ERC20, ERC20Capped, ReentrancyGuard, Ownable {
         require(msg.value == bondPrice, "Must pay the exact bond price.");
         uint256 bondTokensToIssue = bondPrice / rate;
         _mint(msg.sender, bondTokensToIssue);
+    }
+
+    function depositRevenue() public payable nonReentrant onlyOwner {
+        emit RevenueDeposited(msg.value);
     }
     
     function distributeCoupon() public onlyOwner nonReentrant {
