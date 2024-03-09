@@ -18,7 +18,6 @@ describe("RevenueShare Contract", function () {
     revenueShare = (await RevenueShareFactory.deploy(
       "RevenueShareToken",
       "RST",
-      rate,
       bondPrice,
       futureExpiryDate,
       couponIntervalMonths,
@@ -29,7 +28,7 @@ describe("RevenueShare Contract", function () {
   });
 
   it("Should allow users to buy bond tokens", async function () {
-    const buyTx1 = await revenueShare.connect(user1).buyBondTokens({ value: bondPrice });
+    const buyTx1 = await revenueShare.connect(user1).buyBondTokens(1, { value: bondPrice });
     await buyTx1.wait();
 
     const balanceUser1 = await revenueShare.balanceOf(user1.address);
@@ -37,8 +36,8 @@ describe("RevenueShare Contract", function () {
   });
 
   it("Should distribute coupon payments correctly", async function () {
-    await revenueShare.connect(user1).buyBondTokens({ value: bondPrice });
-    await revenueShare.connect(user2).buyBondTokens({ value: bondPrice });
+    await revenueShare.connect(user1).buyBondTokens(1, { value: bondPrice });
+    await revenueShare.connect(user2).buyBondTokens(1, { value: bondPrice });
 
     // Simulate passage of time for the coupon interval
     await ethers.provider.send("evm_increaseTime", [couponIntervalMonths * 30 * 24 * 3600]); // Approx. 6 months in seconds
@@ -59,7 +58,7 @@ describe("RevenueShare Contract", function () {
   });
 
   it("Should prevent transferring tokens", async function () {
-    await revenueShare.connect(user1).buyBondTokens({ value: bondPrice });
+    await revenueShare.connect(user1).buyBondTokens(1, { value: bondPrice });
 
     await expect(
       revenueShare.connect(user1).transfer(user2.address, ethers.parseEther("1"))
