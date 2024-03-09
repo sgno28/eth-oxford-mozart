@@ -12,51 +12,32 @@ const spotifyClientId = process.env.NEXT_PUBLIC_SPOTIFY_CLIENT_ID;
 export function CreatorSignup() {
   // State to track Spotify connection
   const [isSpotifyConnected, setIsSpotifyConnected] = useState(false);
-  const [isWalletConnected, setIsWalletConnected] = useState(false);
-  const [walletAddress, setWalletAddress] = useState("");
-  const [walletButtonText, setWalletButtonText] = useState("Link Wallet");
+ 
   const [spotifyButtonText, setSpotifyButtonText] = useState("Link Spotify");
   const [spotifyProfile, setSpotifyProfile] = useState<SpotifyProfile | null>(
     null
   );
-
+  const { walletButtonText, isWalletConnected, handleWalletLink } = useWallet();
   useEffect(() => {
     const code = new URLSearchParams(window.location.search).get("code");
-    if (code && !isSpotifyConnected && !spotifyProfile) { 
+    if (code && !isSpotifyConnected && !spotifyProfile) {
       (async () => {
-        const profile: SpotifyProfile | null = await handleSpotifyAuthCallback(spotifyClientId!);
-        if (profile && profile.spotifyId) { 
+        const profile: SpotifyProfile | null = await handleSpotifyAuthCallback(
+          spotifyClientId!
+        );
+        if (profile && profile.spotifyId) {
           console.log("Spotify profile fetched:", profile);
           setSpotifyProfile(profile);
           setIsSpotifyConnected(true);
           setSpotifyButtonText("Spotify Connected");
-          
+
           // Clear the code from the URL
           const newUrl = window.location.pathname;
-          window.history.pushState({}, '', newUrl);
+          window.history.pushState({}, "", newUrl);
         }
-      })();
-    }
-  }, [isSpotifyConnected, spotifyProfile]);
-
-  const handleSpotifyAuth = () => {
-    redirectToAuthCodeFlow(spotifyClientId!);
-  };
-
-  const handleWalletLink = async () => {
-    if (window.ethereum) {
-      try {
-        const accounts = await window.ethereum.request({
-          method: "eth_requestAccounts",
-        });
-        console.log("Connected wallet account:", accounts[0]);
-        setWalletAddress(accounts[0]); 
-        console.log(walletAddress);
-        setIsWalletConnected(true);
-        setWalletButtonText("Wallet Connected");
         if (isSpotifyConnected && spotifyProfile) {
-            console.log("I have penetrated");
-            console.log(spotifyProfile);
+          console.log("I have penetrated");
+          console.log(spotifyProfile);
           addCreator({
             spotifyId: spotifyProfile.spotifyId,
             name: spotifyProfile.displayName,
@@ -67,12 +48,12 @@ export function CreatorSignup() {
             image: spotifyProfile.image,
           });
         }
-      } catch (error) {
-        console.error("Error connecting to wallet:", error);
-      }
-    } else {
-      console.log("Wallet is not installed!");
+      })();
     }
+  }, [isSpotifyConnected, spotifyProfile]);
+
+  const handleSpotifyAuth = () => {
+    redirectToAuthCodeFlow(spotifyClientId!);
   };
 
   const onSubmit = (event: FormEvent<HTMLFormElement>) => {
