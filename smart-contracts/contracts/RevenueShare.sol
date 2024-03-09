@@ -4,8 +4,9 @@ pragma solidity 0.8.24;
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Capped.sol";
 
-contract RevenueShare is ERC20, ReentrancyGuard, Ownable {
+contract RevenueShare is ERC20, ERC20Capped, ReentrancyGuard, Ownable {
     address public musician;
     uint256 public rate; 
     uint256 public bondPrice; 
@@ -23,8 +24,9 @@ contract RevenueShare is ERC20, ReentrancyGuard, Ownable {
         uint256 _rate,
         uint256 _bondPrice,
         uint256 _expiryDate,
-        uint256 _couponIntervalMonths
-    ) ERC20(name, symbol) Ownable(msg.sender) {
+        uint256 _couponIntervalMonths,
+        uint256 _supplyCap
+    ) ERC20(name, symbol) ERC20Capped(_supplyCap) Ownable(msg.sender) {
         require(_expiryDate > block.timestamp, "Expiry date must be in the future.");
         musician = msg.sender;
         rate = _rate;
@@ -40,7 +42,7 @@ contract RevenueShare is ERC20, ReentrancyGuard, Ownable {
         _mint(msg.sender, bondTokensToIssue);
     }
 
-    function _update(address from, address to, uint256 amount) internal override {
+    function _update(address from, address to, uint256 amount) internal override(ERC20, ERC20Capped) {
         require(from == address(0), "Tokens are non-transferrable.");
 
         super._update(from, to, amount);
