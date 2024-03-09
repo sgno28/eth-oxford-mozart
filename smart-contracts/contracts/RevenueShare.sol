@@ -34,4 +34,10 @@ contract RevenueShare is ERC20, ReentrancyGuard, Ownable {
         lastCouponPayment = block.timestamp;
     }
 
+    function buyBondTokens() public payable nonReentrant {
+        require(msg.value == bondPrice, "Must pay the exact bond price.");
+        uint256 bondTokensToIssue = bondPrice / rate;
+        _mint(msg.sender, bondTokensToIssue);
+    }
+
 }
