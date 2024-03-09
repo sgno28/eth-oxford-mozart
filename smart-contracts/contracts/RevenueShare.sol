@@ -70,7 +70,6 @@ contract RevenueShare is ERC20, ERC20Capped, ReentrancyGuard, Ownable {
 
     function _update(address from, address to, uint256 amount) internal override(ERC20, ERC20Capped) {
         require(from == address(0), "Tokens are non-transferrable.");
-
         super._update(from, to, amount);
 
         if (amount > 0) {
