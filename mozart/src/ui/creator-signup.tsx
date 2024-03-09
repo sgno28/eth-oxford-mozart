@@ -38,7 +38,7 @@ export function CreatorSignup() {
       })();
     }
   }, [isSpotifyConnected, spotifyProfile]);
-  
+
   const handleSpotifyAuth = () => {
     redirectToAuthCodeFlow(spotifyClientId!);
   };
@@ -50,7 +50,8 @@ export function CreatorSignup() {
           method: "eth_requestAccounts",
         });
         console.log("Connected wallet account:", accounts[0]);
-        setWalletAddress(accounts[0]); // Update the walletAddress state
+        setWalletAddress(accounts[0]); 
+        console.log(walletAddress);
         setIsWalletConnected(true);
         setWalletButtonText("Wallet Connected");
         if (isSpotifyConnected && spotifyProfile) {
@@ -61,7 +62,7 @@ export function CreatorSignup() {
             name: spotifyProfile.displayName,
             start_date: null,
             followers: null,
-            web3_wallet: walletAddress,
+            web3_wallet: accounts[0],
             bond: null,
             image: spotifyProfile.image,
           });
