@@ -1,4 +1,4 @@
-import { getFirestore, collection, addDoc } from "firebase/firestore";
+import { getFirestore, doc, setDoc } from "firebase/firestore";
 import { app } from "./firebaseConfig";
 import { Creator } from "../lib/interfaces";
 
@@ -13,12 +13,19 @@ const addCreator = async ({
   bond,
   image,
 }: Creator) => {
-  await addDoc(collection(db, "creators"), {
+  if (!spotifyId) {
+    throw new Error("Spotify ID is required to add a creator.");
+  }
+  
+  // Specify the document ID explicitly by using the spotifyId
+  const docRef = doc(db, "creators", spotifyId);
+  await setDoc(docRef, {
     name,
     image,
-    spotifyId,
+    spotifyId, // This might be redundant since spotifyId is used as the doc ID
     web3_wallet,
-  });
+    // Include other fields as necessary
+  }, { merge: true }); // Using { merge: true } to update existing documents instead of overwriting
 };
 
 export { app, addCreator };
