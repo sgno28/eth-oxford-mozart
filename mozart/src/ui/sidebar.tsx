@@ -51,14 +51,14 @@ export function Sidebar({ mode, onSetMode }: SidebarProps) {
         >
           <div
             className={`flex-1 text-center py-2 px-2 ${
-              mode === "Fan" ? "bg-blue-500 text-white" : "text-gray-800"
+              mode === "Fan" ? "bg-black text-white" : "text-gray-800"
             }`}
           >
             Fan
           </div>
           <div
             className={`flex-1 text-center py-2 px-2 ${
-              mode === "Creator" ? "bg-blue-500 text-white" : "text-gray-800"
+              mode === "Creator" ? "bg-black text-white" : "text-gray-800"
             }`}
           >
             Creator
