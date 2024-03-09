@@ -3,11 +3,8 @@ import { Button } from "@/ui/button";
 import { Separator } from "@/ui/separator";
 import { useMode } from "@/app/contexts/ModeContext";
 import { useRouter } from "next/navigation";
-interface SidebarProps extends React.HTMLAttributes<HTMLDivElement> {
-  sideBarRoutes: string[];
-}
 
-export function Sidebar({ sideBarRoutes }: SidebarProps) {
+export function Sidebar() {
   const { mode, setMode } = useMode();
   const router = useRouter();
 
@@ -15,7 +12,6 @@ export function Sidebar({ sideBarRoutes }: SidebarProps) {
     const newMode = mode === "Fan" ? "Creator" : "Fan";
     setMode(newMode);
 
-    // Use the useRouter hook for client-side redirection
     const targetPath = newMode === "Fan" ? "/fan" : "/creator";
     router.push(targetPath);
   };
@@ -24,7 +20,14 @@ export function Sidebar({ sideBarRoutes }: SidebarProps) {
     <div className="flex flex-col h-screen">
       <div className="flex-1 overflow-auto py-4 space-y-4">
         <div className="py-2">
-          <div className="px-3">
+          <div
+            className="px-3 cursor-pointer"
+            onClick={() => {
+              const targetPath =
+                mode === "Fan" ? "/fan/my-creators" : "/creator/my-bond";
+              router.push(targetPath);
+            }}
+          >
             <h2 className="px-4 text-lg font-semibold tracking-tight">
               My {mode === "Fan" ? "Creators" : "Fans"}
             </h2>
@@ -33,7 +36,11 @@ export function Sidebar({ sideBarRoutes }: SidebarProps) {
 
           <Separator className="horizontal my-2"></Separator>
           <div className="space-y-1 px-3">
-            <Button variant="secondary" className="w-full justify-start">
+            <Button
+              variant="secondary"
+              className="w-full justify-start"
+              onClick={() => router.push("/fan/discover")} // Redirects to the Discover page
+            >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 24 24"
@@ -47,7 +54,7 @@ export function Sidebar({ sideBarRoutes }: SidebarProps) {
                 <circle cx="12" cy="12" r="10" />
                 <polygon points="10 8 16 12 10 16 10 8" />
               </svg>
-              Listen Now
+              Discover
             </Button>
           </div>
         </div>
@@ -77,3 +84,6 @@ export function Sidebar({ sideBarRoutes }: SidebarProps) {
     </div>
   );
 }
+
+const fan_routes: string[] = ["/fan/discover"];
+const creator_routes: string[] = [""];

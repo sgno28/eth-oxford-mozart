@@ -19,7 +19,7 @@ export default function RootLayout({
             <div className="border-t">
               <div className="bg-background h-full">
                 <div className="grid lg:grid-cols-5 h-full">
-                  <Sidebar sideBarRoutes={[]} />
+                  <Sidebar />
                   <div className="col-span-3 lg:col-span-4 lg:border-l overflow-auto">
                     <header className="text-black p-3 text-center text-xl font-bold">
                       Arria
