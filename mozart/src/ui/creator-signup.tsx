@@ -6,18 +6,20 @@ import {
 } from "@/services/spotifyFetch";
 import { addCreator } from "@/firebase/addCreator";
 import { Creator, SpotifyProfile } from "../lib/interfaces";
+import { useWallet } from "@/app/contexts/WalletContext";
 
 const spotifyClientId = process.env.NEXT_PUBLIC_SPOTIFY_CLIENT_ID;
 
 export function CreatorSignup() {
   // State to track Spotify connection
   const [isSpotifyConnected, setIsSpotifyConnected] = useState(false);
- 
+
   const [spotifyButtonText, setSpotifyButtonText] = useState("Link Spotify");
   const [spotifyProfile, setSpotifyProfile] = useState<SpotifyProfile | null>(
     null
   );
   const { walletButtonText, isWalletConnected, handleWalletLink } = useWallet();
+  
   useEffect(() => {
     const code = new URLSearchParams(window.location.search).get("code");
     if (code && !isSpotifyConnected && !spotifyProfile) {
@@ -35,17 +37,17 @@ export function CreatorSignup() {
           const newUrl = window.location.pathname;
           window.history.pushState({}, "", newUrl);
         }
-        if (isSpotifyConnected && spotifyProfile) {
+        if (isSpotifyConnected && profile) {
           console.log("I have penetrated");
-          console.log(spotifyProfile);
+          console.log(profile);
           addCreator({
-            spotifyId: spotifyProfile.spotifyId,
-            name: spotifyProfile.displayName,
+            spotifyId: profile.spotifyId,
+            name: profile.displayName,
             start_date: null,
             followers: null,
             web3_wallet: accounts[0],
             bond: null,
-            image: spotifyProfile.image,
+            image: profile.image,
           });
         }
       })();
