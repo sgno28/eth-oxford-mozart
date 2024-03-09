@@ -27,6 +27,8 @@ export function CreatorSignup() {
         const profile: SpotifyProfile | null = await handleSpotifyAuthCallback(
           spotifyClientId!
         );
+        console.log("Spotify profile fetched:", profile);
+
         if (profile && profile.spotifyId) {
           console.log("Spotify profile fetched:", profile);
           setSpotifyProfile(profile);
