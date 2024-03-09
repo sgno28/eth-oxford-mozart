@@ -12,8 +12,8 @@ export function Sidebar({ mode, onSetMode }: SidebarProps) {
   };
 
   return (
-    <div className="flex flex-col h-full">
-      <div className="flex-1 space-y-4 py-4 overflow-auto">
+    <div className="flex flex-col h-screen">
+      <div className="flex-1 overflow-auto py-4 space-y-4">
         <div className="py-2">
           <div className="px-3">
             <h2 className="px-4 text-lg font-semibold tracking-tight">
@@ -43,14 +43,13 @@ export function Sidebar({ mode, onSetMode }: SidebarProps) {
           </div>
         </div>
       </div>
-      {/* Toggle Button at the bottom */}
-      <div className="px-3 py-2">
+      <div className="px-3 py-6 justify-center">
         <Button
           onClick={toggleMode}
           variant="secondary"
-          className="w-full justify-center"
+          className="justify-center"
         >
-          Switch to {mode === "Fan" ? "Creator" : "Fan"} Mode
+          {mode === "Fan" ? "Creator" : "Fan"}
         </Button>
       </div>
     </div>

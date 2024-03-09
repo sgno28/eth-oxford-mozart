@@ -15,12 +15,12 @@ export default function HomePage() {
 
   return (
     <>
-      <div className="hidden md:block">
+      <div className="hidden md:block min-h-screen">
         <div className="border-t">
-          <div className="bg-background">
-            <div className="grid lg:grid-cols-5">
+          <div className="bg-background h-full">
+            <div className="grid lg:grid-cols-5 h-full">
               <Sidebar mode={mode} onSetMode={setMode} />
-              <div className="col-span-3 lg:col-span-4 lg:border-l">
+              <div className="col-span-3 lg:col-span-4 lg:border-l overflow-auto">
                 <header className="text-black p-3 text-center text-xl font-bold">
                   Arria
                 </header>
