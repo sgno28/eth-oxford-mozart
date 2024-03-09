@@ -42,7 +42,7 @@ contract RevenueShare is ERC20, ERC20Capped, ReentrancyGuard, Ownable {
         _mint(msg.sender, numberOfBonds);
     }
 
-    function depositRevenue() public payable nonReentrant onlyOwner {
+    function depositRevenue() public payable nonReentrant {
         emit RevenueDeposited(msg.value);
     }
 
