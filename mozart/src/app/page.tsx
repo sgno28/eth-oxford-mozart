@@ -1,12 +1,6 @@
 "use client";
-import { ScrollArea, ScrollBar } from "@/ui/scroll-area";
 import { Separator } from "@/ui/separator";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/ui/tabs";
-
-import { AlbumArtwork } from "@/ui/album-artwork";
-import { PodcastEmptyPlaceholder } from "@/ui/podcast-empty-placeholder";
 import { Sidebar } from "@/ui/sidebar";
-import { listenNowAlbums, madeForYouAlbums } from "../data/albums";
 import { useState } from "react";
 import FanPage from "./fan-ui/page";
 import CreatorPage from "./creator-ui/page";
