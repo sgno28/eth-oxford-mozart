@@ -73,15 +73,6 @@ export function CreatorSignup() {
         <Button type="button" onClick={handleSpotifyAuth}>
           {spotifyButtonText}
         </Button>
-        {isSpotifyConnected && (
-          <Button
-            type="button"
-            onClick={handleWalletLink}
-            disabled={isWalletConnected}
-          >
-            {walletButtonText}
-          </Button>
-        )}
       </form>
     </div>
   );
