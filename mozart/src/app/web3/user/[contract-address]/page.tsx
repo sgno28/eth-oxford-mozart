@@ -2,22 +2,27 @@
 import React, { useEffect, useState } from "react";
 import { ethers } from "ethers";
 import { usePathname } from "next/navigation";
-import { revenueShareContract } from "@/contracts/revenueShare";
 import { merchandiseSaleContract } from "@/contracts/merchandiseSale";
 import { Button } from "@/ui/button"; 
-import { Label } from "@/ui/label";
 import { Input } from "@/ui/input";
+import { Label } from "@/ui/label";
+
+interface MerchItem {
+  id: number;
+  name: string;
+  price: ethers.BigNumber;
+  supplyCap: number;
+  sold: number;
+  isActive: boolean;
+}
 
 export default function UserPage() {
     const pathname = usePathname();
     const pathSegments = pathname.split('/');
     const revenueShareAddress = pathSegments[pathSegments.length - 1];
-    const [revenueShareContractInstance, setRevenueShareContractInstance] = useState<ethers.Contract | null>(null);
-    const [merchandiseContractAddress, setMerchandiseContractAddress] = useState("");
-    const [newItem, setNewItem] = useState({ name: '', price: 0, supplyCap: 0 });
-
-    const merchandiseSaleContractABI = merchandiseSaleContract.abi;
-    const merchandiseSaleBytecode = merchandiseSaleContract.bytecode;
+    const [merchandiseContract, setMerchandiseContract] = useState<ethers.Contract | null>(null);
+    const [items, setItems] = useState<MerchItem[]>([]);
+    const [newItem, setNewItem] = useState({ name: '', price: '', supplyCap: '' });
 
     useEffect(() => {
         if (!revenueShareAddress) {
@@ -28,81 +33,85 @@ export default function UserPage() {
             console.log("Ethereum provider not available.");
             return;
         }
+
         const provider = new ethers.providers.Web3Provider((window as any).ethereum);
         const signer = provider.getSigner();
-        const contract = new ethers.Contract(revenueShareAddress, revenueShareContract.abi, signer);
-        setRevenueShareContractInstance(contract);
+        const contractInstance = new ethers.Contract(revenueShareAddress, merchandiseSaleContract.abi, signer);
+        setMerchandiseContract(contractInstance);
+        loadItems(contractInstance);
     }, [revenueShareAddress]);
 
-    async function deployMerchandiseContract() {
-        if (!revenueShareContractInstance) {
-            console.error("Deploy Revenue Share contract first.");
-            return;
-        }
-        const provider = new ethers.providers.Web3Provider((window as any).ethereum);
-        const signer = provider.getSigner();
-        const merchandiseContractFactory = new ethers.ContractFactory(merchandiseSaleContractABI, merchandiseSaleBytecode, signer);
-        const merchandiseContract = await merchandiseContractFactory.deploy(revenueShareContractInstance.address);
-        await merchandiseContract.deployed();
-        setMerchandiseContractAddress(merchandiseContract.address);
-    }
+    const loadItems = async (contractInstance: ethers.Contract) => {
+        const totalItems = await contractInstance.nextItemId;
+        const itemsArray = [];
 
-    function handleNewItemChange(event: React.ChangeEvent<HTMLInputElement>) {
-        setNewItem({ ...newItem, [event.target.name]: event.target.value });
-    }
-
-    async function addMerchandiseItem() {
-        if (!merchandiseContractAddress) {
-            console.error("Deploy Merchandise Contract first.");
-            return;
-        }
-        const provider = new ethers.providers.Web3Provider((window as any).ethereum);
-        const signer = provider.getSigner();
-        const merchandiseContract = new ethers.Contract(merchandiseContractAddress, merchandiseSaleContractABI, signer);
-        await merchandiseContract.addItem(1, newItem.name, ethers.utils.parseEther(newItem.price.toString()), newItem.supplyCap);
-    }
-
-    async function purchaseItem(itemId: number) {
-        try {
-            if (!merchandiseContractAddress) {
-                throw new Error("No Merchandise Contract deployed.");
+        for (let i = 1; i < totalItems.toNumber(); i++) {
+            const item = await contractInstance.merchCatalog(i);
+            if (item.isActive) {
+                itemsArray.push({
+                    id: i,
+                    name: item.name,
+                    price: item.price,
+                    supplyCap: item.supplyCap.toNumber(),
+                    sold: item.sold.toNumber(),
+                    isActive: item.isActive,
+                });
             }
-            const provider = new ethers.providers.Web3Provider((window as any).ethereum);
-            const signer = provider.getSigner();
-            const merchandiseContract = new ethers.Contract(merchandiseContractAddress, merchandiseSaleContractABI, signer);
-    
-            console.log(`Purchasing item with ID: ${itemId}`);
-            await merchandiseContract.purchaseItem(itemId, { value: ethers.utils.parseEther("1") }); // Ensure this value matches the item price
-        } catch (error) {
-            console.error("Purchase Item Error:", error);
         }
-    }
-    
 
-    async function checkRevenueShareBalance() {
-        if (!revenueShareContractInstance) {
-            console.error("No Revenue Share Contract deployed.");
+        setItems(itemsArray);
+    };
+
+    const handleNewItemChange = (e: any) => {
+        const { name, value } = e.target;
+        setNewItem((prev) => ({ ...prev, [name]: value }));
+    };
+
+    const handleAddItem = async () => {
+        if (!merchandiseContract) {
+            console.error("Merchandise Contract not loaded.");
             return;
         }
-        const provider = new ethers.providers.Web3Provider((window as any).ethereum);
-        const balance = await provider.getBalance(revenueShareContractInstance.address);
-        console.log("Revenue Share Contract Balance:", ethers.utils.formatEther(balance));
-    }
+        await merchandiseContract.addItem(
+            newItem.name, 
+            parseInt(newItem.price), 
+            parseInt(newItem.supplyCap)
+        );
+        // Reload items after adding
+        await loadItems(merchandiseContract);
+    };
+
+    const handlePurchaseItem = async (itemId: number, price: string) => {
+        if (!merchandiseContract) {
+            console.error("No Merchandise Contract deployed.");
+            return;
+        }
+        await merchandiseContract.purchaseItem(itemId, { value: ethers.utils.parseEther(price.toString()) });
+    };
 
     return (
-        <div className="flex flex-col items-center justify-center h-screen space-y-4">
-            <Button onClick={deployMerchandiseContract}>Deploy Merchandise Contract</Button>
-            <div>
+        <div className="flex flex-col items-center justify-center space-y-4">
+            <h1>Merchandise Items</h1>
+            <div className="space-y-2">
                 <Label>Name:</Label>
                 <Input name="name" value={newItem.name} onChange={handleNewItemChange} />
-                <Label>Price:</Label>
-                <Input name="price" value={newItem.price} type="number" onChange={handleNewItemChange} />
+                <Label>Price (ETH):</Label>
+                <Input name="price" value={newItem.price} onChange={handleNewItemChange} />
                 <Label>Supply Cap:</Label>
-                <Input name="supplyCap" value={newItem.supplyCap} type="number" onChange={handleNewItemChange} />
-                <Button onClick={addMerchandiseItem}>Add Merchandise Item</Button>
+                <Input name="supplyCap" value={newItem.supplyCap} onChange={handleNewItemChange} />
+                <Button onClick={handleAddItem}>Add Merchandise Item</Button>
             </div>
-            <Button onClick={() => purchaseItem(1)}>Purchase Item</Button> 
-            <Button onClick={checkRevenueShareBalance}>Check Revenue Share Balance</Button>
+            <div className="grid grid-cols-3 gap-4">
+                {items.map((item) => (
+                    <div key={item.id} className="border p-4">
+                        <p>Name: {item.name}</p>
+                        <p>Price: {ethers.utils.formatEther(item.price)} ETH</p>
+                        <p>Supply Cap: {item.supplyCap}</p>
+                        <p>Sold: {item.sold}</p>
+                        <Button onClick={() => handlePurchaseItem(item.id, ethers.utils.formatEther(item.price))}>Purchase</Button>
+                    </div>
+                ))}
+            </div>
         </div>
     );
 }
