@@ -4,21 +4,23 @@ pragma solidity ^0.8.20;
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "./RevenueShare.sol";
+import "./RevenueShare.sol"; // Assuming RevenueShare contract is in the same directory
 
 /**
  * @title TicketFactory
- * @dev Contract for minting NFT tickets where sale proceeds are routed to the musician's bond contract.
+ * @dev Contract for minting NFT tickets with a common IPFS URL for all tokens, where sale proceeds are routed to the musician's bond contract.
  */
 contract TicketFactory is ERC721, ReentrancyGuard, Ownable {
     uint256 private _nextTokenId;
     address public revenueShareAddress; // Address of the RevenueShare contract associated with the musician
+    string private _commonIpfsUrl; // Common IPFS URL for all tokens
 
-    constructor(address initialOwner, address _revenueShareAddress)
+    constructor(address initialOwner, address _revenueShareAddress, string memory commonIpfsUrl)
         ERC721("TicketFactory", "TCKT")
         Ownable(initialOwner)
     {
         revenueShareAddress = _revenueShareAddress;
+        _commonIpfsUrl = commonIpfsUrl;
     }
 
     /**
@@ -38,10 +40,20 @@ contract TicketFactory is ERC721, ReentrancyGuard, Ownable {
     }
 
     /**
-     * @dev Override _baseURI to set the base URI for all token IDs.
+     * @dev Override tokenURI to return the common IPFS URL for all token IDs.
+     * @param tokenId The ID of the token.
      */
-    function _baseURI() internal view virtual override returns (string memory) {
-        return "https://example.com/api/token/";
+    function tokenURI(uint256 tokenId) public view override returns (string memory) {
+        require(_exists(tokenId), "ERC721Metadata: URI query for nonexistent token");
+        return _commonIpfsUrl;
+    }
+
+    /**
+     * @dev Set or update the common IPFS URL for all tokens.
+     * @param commonIpfsUrl The new common IPFS URL.
+     */
+    function setCommonIpfsUrl(string memory commonIpfsUrl) public onlyOwner {
+        _commonIpfsUrl = commonIpfsUrl;
     }
 
     /**
