@@ -95,7 +95,6 @@ export async function signUpAsArtist(token: string, clientId: string) {
 }
 
 export async function handleSpotifyAuthCallback(clientId: string) {
-  console.log("handleSpotifyAuthCallback called");
   const params = new URLSearchParams(window.location.search);
   const code = params.get("code");
   if (code && clientId) {
