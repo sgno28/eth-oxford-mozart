@@ -1,3 +1,4 @@
+import { SpotifyProfile } from "@/lib/interfaces";
 const clientId = process.env.REACT_APP_SPOTIFY_CLIENT_ID;
 
 export async function redirectToAuthCodeFlow(clientId: string) {
@@ -9,7 +10,7 @@ export async function redirectToAuthCodeFlow(clientId: string) {
   const params = new URLSearchParams();
   params.append("client_id", clientId);
   params.append("response_type", "code");
-  params.append("redirect_uri", "http://localhost:3000");
+  params.append("redirect_uri", "http://localhost:3000/creator");
   params.append("scope", "user-read-private user-read-email");
   params.append("code_challenge_method", "S256");
   params.append("code_challenge", challenge);
@@ -18,17 +19,16 @@ export async function redirectToAuthCodeFlow(clientId: string) {
   window.location.href = `https://accounts.spotify.com/authorize?${params.toString()}`;
 }
 
-
 function generateCodeVerifier(length: number) {
   let text = "";
-  let possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  let possible =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 
   for (let i = 0; i < length; i++) {
     text += possible.charAt(Math.floor(Math.random() * possible.length));
   }
   return text;
 }
-
 
 async function generateCodeChallenge(codeVerifier: string) {
   const data = new TextEncoder().encode(codeVerifier);
@@ -49,7 +49,7 @@ export async function getAccessToken(
   params.append("client_id", clientId);
   params.append("grant_type", "authorization_code");
   params.append("code", code);
-  params.append("redirect_uri", "http://localhost:3000");
+  params.append("redirect_uri", "http://localhost:3000/creator");
   params.append("code_verifier", verifier!);
 
   const result = await fetch("https://accounts.spotify.com/api/token", {
@@ -67,10 +67,10 @@ export async function fetchProfile(token: string): Promise<any> {
     method: "GET",
     headers: { Authorization: `Bearer ${token}` },
   });
-  const res = await result.json()
-  console.log(res)
+  const res = await result.json();
+  console.log(res);
 
-  return res
+  return res;
 }
 
 export async function signUpAsArtist(token: string, clientId: string) {
@@ -91,7 +91,6 @@ export async function signUpAsArtist(token: string, clientId: string) {
   // });
 
   // Redirect to the signup page
-  window.location.href = "http://localhost:3000";
 }
 
 export async function handleSpotifyAuthCallback(clientId: string) {
@@ -101,12 +100,32 @@ export async function handleSpotifyAuthCallback(clientId: string) {
     try {
       const accessToken = await getAccessToken(clientId, code);
       const profile = await fetchProfile(accessToken);
-      console.log("Name:", profile.display_name);
-      console.log("Spotify ID:", profile.id);
+      console.log(profile);
+      console.log(profile.images[0].url);
+
+      const res: SpotifyProfile = {
+        displayName: profile.display_name,
+        spotifyId: profile.id,
+        image: profile.images[0]?.url,
+      };
+
+      return res;
     } catch (error) {
       console.error("Error:", error);
+      const resError: SpotifyProfile = {
+        displayName: null,
+        spotifyId: null,
+        image: null,
+      };
+      return resError;
     }
   } else {
     console.error("Error: No authorization code or client ID provided.");
+    const resError: SpotifyProfile = {
+      displayName: null,
+      spotifyId: null,
+      image: null,
+    };
+    return resError;
   }
 }

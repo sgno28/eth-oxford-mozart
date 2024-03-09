@@ -8,13 +8,19 @@ export interface CreatorBond {
 }
 
 export interface Creator {
-  id: string;
-  name: string;
-  start_date: number;
-  monthly_listeners: number;
-  followers: number;
-  web3_wallet: string;
-  bond: CreatorBond;
+  spotifyId: string | null;
+  name: string | null;
+  start_date: number | null;
+  followers: number | null;
+  web3_wallet: string | null;
+  bond: CreatorBond | null;
+  image: string | null;
+}
+
+export interface SpotifyProfile {
+  displayName: string | null;
+  spotifyId: string | null;
+  image: string | null;
 }
 
 export interface Fan {
