@@ -7,9 +7,9 @@ import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-import { AlbumArtwork } from "./components/album-artwork";
-import { PodcastEmptyPlaceholder } from "./components/podcast-empty-placeholder";
-import { Sidebar } from "./components/sidebar";
+import { AlbumArtwork } from "./ui/album-artwork";
+import { PodcastEmptyPlaceholder } from "./ui/podcast-empty-placeholder";
+import { Sidebar } from "./ui/sidebar";
 import { listenNowAlbums, madeForYouAlbums } from "./data/albums";
 import { playlists } from "./data/playlists";
 
