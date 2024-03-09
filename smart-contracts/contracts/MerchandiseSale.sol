@@ -5,24 +5,19 @@ import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "./RevenueShare.sol";
 
-
 contract MerchandiseSale is ReentrancyGuard, Ownable {
-    // Struct to represent merchandise item
     struct MerchItem {
         string name;
         uint256 price;
-        uint256 supplyCap; // The maximum amount of this item that can be sold
-        uint256 sold; // The number of items sold
+        uint256 supplyCap;
+        uint256 sold;
         bool isActive;
     }
 
-    // Map item IDs to merchandise items
     mapping(uint256 => MerchItem) public merchCatalog;
-
-    // Address of the RevenueShare contract associated with the musician
+    uint256 public nextItemId = 1;  // Start itemId from 1
     address public revenueShareAddress;
 
-    // Event for merchandise sales
     event MerchandiseSold(address buyer, uint256 itemId, uint256 price);
 
     constructor(address _revenueShareAddress) Ownable(msg.sender) {
@@ -30,11 +25,10 @@ contract MerchandiseSale is ReentrancyGuard, Ownable {
         revenueShareAddress = _revenueShareAddress;
     }
 
-
-    function addItem(uint256 itemId, string memory name, uint256 price, uint256 supplyCap) public onlyOwner {
-        require(!merchCatalog[itemId].isActive, "Item already exists.");
+    function addItem(string memory name, uint256 price, uint256 supplyCap) public onlyOwner {
         require(supplyCap > 0, "Supply cap must be greater than zero.");
-        merchCatalog[itemId] = MerchItem(name, price, supplyCap, 0, true);
+        merchCatalog[nextItemId] = MerchItem(name, price, supplyCap, 0, true);
+        nextItemId++;  // Increment the itemId for the next item
     }
 
     function purchaseItem(uint256 itemId) public payable nonReentrant {
@@ -42,10 +36,7 @@ contract MerchandiseSale is ReentrancyGuard, Ownable {
         require(msg.value == merchCatalog[itemId].price, "Incorrect payment amount.");
         require(merchCatalog[itemId].sold < merchCatalog[itemId].supplyCap, "Item sold out.");
 
-        // Increment the sold counter
         merchCatalog[itemId].sold++;
-
-        // Forward the received funds to the RevenueShare contract
         RevenueShare(revenueShareAddress).depositRevenue{value: msg.value}();
 
         emit MerchandiseSold(msg.sender, itemId, msg.value);
