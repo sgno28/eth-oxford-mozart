@@ -12,7 +12,7 @@ contract TicketFactory is ERC721, ReentrancyGuard, Ownable {
     string private _commonIpfsUrl; // Common IPFS URL for all tokens
 
     constructor(address initialOwner, address _revenueShareAddress, string memory commonIpfsUrl)
-        ERC721("TicketFactory", "TCKT")
+        ERC721("Ticket", "TKT")
         Ownable(initialOwner)
     {
         revenueShareAddress = _revenueShareAddress;
