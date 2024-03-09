@@ -2,16 +2,16 @@ import { Metadata } from "next";
 import Image from "next/image";
 import { PlusCircledIcon } from "@radix-ui/react-icons";
 
-import { Button } from "@/components/ui/button";
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-import { Separator } from "@/components/ui/separator";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Button } from "@/ui/button";
+import { ScrollArea, ScrollBar } from "@/ui/scroll-area";
+import { Separator } from "@/ui/separator";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/ui/tabs";
 
-import { AlbumArtwork } from "./ui/album-artwork";
-import { PodcastEmptyPlaceholder } from "./ui/podcast-empty-placeholder";
-import { Sidebar } from "./ui/sidebar";
-import { listenNowAlbums, madeForYouAlbums } from "./data/albums";
-import { playlists } from "./data/playlists";
+import { AlbumArtwork } from "@/ui/album-artwork";
+import { PodcastEmptyPlaceholder } from "@/ui/podcast-empty-placeholder";
+import { Sidebar } from "@/ui/sidebar";
+import { listenNowAlbums, madeForYouAlbums } from "../data/albums";
+import { playlists } from "../data/playlists";
 
 export const metadata: Metadata = {
   title: "Music App",
