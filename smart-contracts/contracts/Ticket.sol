@@ -31,7 +31,6 @@ contract TicketFactory is ERC721, ReentrancyGuard, Ownable {
         (bool success, ) = address(revenueShareContract).call{value: msg.value}(
             abi.encodeWithSignature("depositRevenue()")
         );
-        
         require(success, "Failed to forward funds to RevenueShare contract");
     }
 
