@@ -10,8 +10,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/ui/tabs";
 import { AlbumArtwork } from "@/ui/album-artwork";
 import { PodcastEmptyPlaceholder } from "@/ui/podcast-empty-placeholder";
 import { Sidebar } from "@/ui/sidebar";
-import { listenNowAlbums, madeForYouAlbums } from "../data/albums";
-import { playlists } from "../data/playlists";
+import { listenNowAlbums, madeForYouAlbums } from "../../data/albums";
+import { playlists } from "../../data/playlists";
 
 export const metadata: Metadata = {
   title: "Music App",
