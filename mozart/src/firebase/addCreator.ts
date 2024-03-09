@@ -1,4 +1,4 @@
-import { getFirestore, doc, setDoc } from "firebase/firestore";
+import { getFirestore, collection, addDoc } from "firebase/firestore";
 import { app } from "./firebaseConfig";
 import { Creator } from "../lib/interfaces";
 
@@ -8,13 +8,12 @@ const addCreator = async ({
   spotifyId,
   name,
   start_date,
-  monthly_listeners,
   followers,
   web3_wallet,
   bond,
   image,
 }: Creator) => {
-  await setDoc(doc(db, "creators"), {
+  await addDoc(collection(db, "creators"), {
     name,
     image,
     spotifyId,
