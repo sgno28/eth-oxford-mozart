@@ -41,6 +41,28 @@ contract RevenueShare is ERC20, ERC20Capped, ReentrancyGuard, Ownable {
         uint256 bondTokensToIssue = bondPrice / rate;
         _mint(msg.sender, bondTokensToIssue);
     }
+    
+    function distributeCoupon() public onlyOwner nonReentrant {
+        require(block.timestamp >= lastCouponPayment + couponInterval, "Coupon payment not due yet.");
+        require(block.timestamp < expiryDate, "Cannot distribute coupons after bond expiry.");
+
+        uint256 totalRevenue = address(this).balance;
+        require(totalRevenue > 0, "No revenue to distribute.");
+
+        uint256 totalSupply = totalSupply();
+        require(totalSupply > 0, "No bond tokens in circulation.");
+
+        for (uint256 i = 0; i < holders.length; i++) {
+            address holder = holders[i];
+            uint256 holderBalance = balanceOf(holder);
+            if (holderBalance > 0) {
+                uint256 payout = (totalRevenue * holderBalance) / totalSupply;
+                payable(holder).transfer(payout);
+            }
+        }
+
+        lastCouponPayment = block.timestamp;
+    }
 
     function _update(address from, address to, uint256 amount) internal override(ERC20, ERC20Capped) {
         require(from == address(0), "Tokens are non-transferrable.");
