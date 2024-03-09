@@ -8,7 +8,6 @@ const addCreator = async ({
   spotifyId,
   name,
   start_date,
-  monthly_listeners,
   followers,
   web3_wallet,
   bond,

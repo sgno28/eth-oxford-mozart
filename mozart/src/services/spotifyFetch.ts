@@ -67,10 +67,7 @@ export async function fetchProfile(token: string): Promise<any> {
     method: "GET",
     headers: { Authorization: `Bearer ${token}` },
   });
-  const res = await result.json();
-  console.log(res);
-
-  return res;
+  return await result.json();
 }
 
 export async function signUpAsArtist(token: string, clientId: string) {
@@ -101,7 +98,6 @@ export async function handleSpotifyAuthCallback(clientId: string) {
       const accessToken = await getAccessToken(clientId, code);
       const profile = await fetchProfile(accessToken);
       console.log(profile);
-      console.log(profile.images[0].url);
 
       const res: SpotifyProfile = {
         displayName: profile.display_name,
