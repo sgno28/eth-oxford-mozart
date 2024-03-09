@@ -1,16 +1,19 @@
-const clientId = process.env.REACT_APP_SPOTIFY_CLIENT_ID as string
+const clientId = process.env.REACT_APP_SPOTIFY_CLIENT_ID;
 const params = new URLSearchParams(window.location.search);
 const code = params.get("code");
 
-if (!code) {
-  redirectToAuthCodeFlow(clientId);
-} else {
-  const accessToken = await getAccessToken(clientId, code);
-  const profile = await fetchProfile(accessToken);
-  populateUI(profile);
+if (clientId) {
+  if (!code) {
+    redirectToAuthCodeFlow(clientId);
+  } else {
+    const accessToken = await getAccessToken(clientId, code);
+    const profile = await fetchProfile(accessToken);
+    populateUI(profile);
+  }
 }
 
 export async function redirectToAuthCodeFlow(clientId: string) {
+  console.log(clientId);
   const verifier = generateCodeVerifier(128);
   const challenge = await generateCodeChallenge(verifier);
 

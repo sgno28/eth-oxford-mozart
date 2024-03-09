@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button } from '@/ui/button';
-import { redirectToAuthCodeFlow } from '../../services/spotifyFetch';
+import { redirectToAuthCodeFlow } from '../services/spotifyFetch';
 
 function CreatorSignup() {
   // Handler for Spotify authentication
