@@ -9,6 +9,7 @@ import { Sidebar } from "@/ui/sidebar";
 import { listenNowAlbums, madeForYouAlbums } from "../data/albums";
 import { useState } from "react";
 import FanPage from "./fan-ui/page";
+import CreatorPage from "./creator-ui/page";
 
 export default function HomePage() {
   const [mode, setMode] = useState("Fan");
@@ -28,7 +29,8 @@ export default function HomePage() {
                   <p className="italic px-4">Invest in your creators</p>
                 </div>
                 <Separator className="horizontal my-2"></Separator>
-                <FanPage></FanPage>
+
+                {mode === "Fan" ? <FanPage /> : <CreatorPage />}
               </div>
             </div>
           </div>
