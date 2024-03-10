@@ -60,9 +60,9 @@ export function Sidebar() {
         });
       }
     };
-  
+
     checkForMerchStore();
-    console.log(hasMerchStore)
+    console.log(hasMerchStore);
   }, []);
 
   useEffect(() => {
@@ -101,49 +101,53 @@ export function Sidebar() {
       route: "/fan/ticket-marketplace",
       icon: TicketIcon,
     },
-    {name: "Merch Marketplace", route: "/fan/merch-marketplace", icon: Shirt}
+    { name: "Merch Marketplace", route: "/fan/merch-marketplace", icon: Shirt },
   ];
 
-  const creator_routes: SidebarItem[] = hasBond && hasMerchStore
-    ? [
-        {
-          name: "Bond Dashboard",
-          route: "/creator/my-bond",
-          icon: CandlestickChart,
-        },
-        {
-          name: "Create Tickets",
-          route: "/creator/create-tickets",
-          icon: TicketIcon,
-        },
-        {
-          name: "My Tickets",
-          route: "/creator/my-tickets",
-          icon: TicketCheckIcon,
-        },
-        {
-          name: "List Merchandise",
-          route: "/creator/list-merchandise",
-          icon: StoreIcon,
-        }
-      ]
-    : (hasBond && !hasMerchStore ? [
-        { name: "Add bond", route: "/creator/add-bond", icon: PlusIcon },
-        {
-          name: "Create Tickets",
-          route: "/creator/create-tickets",
-          icon: TicketIcon,
-        },
-        {
-          name: "My Tickets",
-          route: "/creator/my-tickets",
-          icon: TicketCheckIcon,
-        },
-        {
-          name: "Set up merchandise store",
-          route: "/creator/set-up-merchandise-store",
-          icon: StoreIcon,
-        }] : [{ name: "Add bond", route: "/creator/add-bond", icon: PlusIcon }]);
+  const creator_routes: SidebarItem[] =
+    hasBond && hasMerchStore
+      ? [
+          {
+            name: "Bond Dashboard",
+            route: "/creator/my-bond",
+            icon: CandlestickChart,
+          },
+          {
+            name: "Create Tickets",
+            route: "/creator/create-tickets",
+            icon: TicketIcon,
+          },
+          {
+            name: "My Tickets",
+            route: "/creator/my-tickets",
+            icon: TicketCheckIcon,
+          },
+          {
+            name: "List Merchandise",
+            route: "/creator/list-merchandise",
+            icon: StoreIcon,
+          },
+        ]
+      : hasBond && !hasMerchStore
+      ? [
+          { name: "Add bond", route: "/creator/add-bond", icon: PlusIcon },
+          {
+            name: "Create Tickets",
+            route: "/creator/create-tickets",
+            icon: TicketIcon,
+          },
+          {
+            name: "My Tickets",
+            route: "/creator/my-tickets",
+            icon: TicketCheckIcon,
+          },
+          {
+            name: "Set up merchandise store",
+            route: "/creator/set-up-merchandise-store",
+            icon: StoreIcon,
+          },
+        ]
+      : [{ name: "Add bond", route: "/creator/add-bond", icon: PlusIcon }];
 
   const toggleMode = () => {
     const newMode = mode === "Fan" ? "Creator" : "Fan";
@@ -154,10 +158,11 @@ export function Sidebar() {
   };
 
   return (
-    <div className="flex flex-col h-screen bg-zinc-50">
+    <div className="flex flex-col h-screen bg-[#dafef1] border-t-2 border-r-2 border-black">
       <div className="flex-1 overflow-auto py-4 space-y-4">
         <div className="py-2">
-          <div className="px-3 ">
+          <div className="flex justify-centre px-3 ">
+            <img src="/logo.png" alt="Logo" className="h-12 w-12" />
             <div className="px-4 ">
               <div
                 className="cursor-pointer"
@@ -172,21 +177,16 @@ export function Sidebar() {
                 </h2>
                 <p className="italic">{mode} View</p>
               </div>
-
-              <div className="pt-8 w-full">
-                <ConnectWalletButton></ConnectWalletButton>
-              </div>
             </div>
           </div>
 
-          <Separator className="horizontal my-2"></Separator>
-          <div className="space-y-1 px-3">
+          <div className="space-y-6 px-3 py-3">
             {mode === "Fan"
               ? fan_routes.map((route: SidebarItem) => (
                   <Button
                     key={route.route}
                     variant="secondary"
-                    className="w-full justify-start"
+                    className="border border-black w-full bg-[#f1fffb] justify-start"
                     onClick={() => router.push(route.route)}
                   >
                     <route.icon className="mr-2" />
@@ -207,26 +207,31 @@ export function Sidebar() {
           </div>
         </div>
       </div>
+      <div className="w-full px-3 py-6">
+        <div className="w-full flex justify-center my-6">
+          <ConnectWalletButton />
+        </div>
 
-      <div className="px-3 py-6 flex justify-center font-medium items-center">
-        <p className="px-2">Switch Mode</p>
-        <div
-          onClick={toggleMode}
-          className="border rounded-md cursor-pointer overflow-hidden flex"
-        >
+        <div className="flex justify-center items-center">
+          <p className="px-2">Switch Mode</p>
           <div
-            className={`flex-1 text-center py-2 px-2 ${
-              mode === "Fan" ? "bg-black text-white" : "text-gray-800"
-            }`}
+            onClick={toggleMode}
+            className="border border-black rounded-md cursor-pointer overflow-hidden flex"
           >
-            Fan
-          </div>
-          <div
-            className={`flex-1 text-center py-2 px-2 ${
-              mode === "Creator" ? "bg-black text-white" : "text-gray-800"
-            }`}
-          >
-            Creator
+            <div
+              className={`flex-1 text-center py-2 px-2 ${
+                mode === "Fan" ? "bg-black text-white" : "text-gray-800"
+              }`}
+            >
+              Fan
+            </div>
+            <div
+              className={`flex-1 text-center py-2 px-2 ${
+                mode === "Creator" ? "bg-black text-white" : "text-gray-800"
+              }`}
+            >
+              Creator
+            </div>
           </div>
         </div>
       </div>

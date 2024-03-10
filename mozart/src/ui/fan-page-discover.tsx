@@ -84,7 +84,10 @@ function TrendingCreators({ creator }: { creator: Creator }) {
   }
   return (
     <Link href={`/fan/bond/${creator.bond?.contract_address}`}>
-      <Card className="flex flex-col items-center flex-shrink-0 p-4 mt-3 mb-3">
+      <Card
+        className="flex bg-[#f1fffb] flex-col items-center flex-shrink-0 p-4 mt-3 mb-3"
+        style={{ minWidth: "350px", minHeight: "200px" }}
+      >
         <img
           src={creator.image || "https://via.placeholder.com/150"}
           alt={creator.name!}
@@ -123,7 +126,7 @@ function TopCreators({ creator }: { creator: Creator }) {
         style={{ minWidth: "350px", marginRight: "20px" }}
       >
         <Card
-          className="flex flex-col justify-between items-center flex-shrink-0 p-10 gap-4"
+          className="flex flex-col bg-[#f1fffb] justify-between items-center flex-shrink-0 p-10 gap-4"
           style={{ minHeight: "300px" }}
         >
           <div className="flex flex-row justify-between items-center w-full">
