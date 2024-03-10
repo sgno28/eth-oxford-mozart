@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, FormEvent } from "react";
 import { Button } from "@/ui/button";
 import {
   handleSpotifyAuthCallback,
@@ -6,6 +6,7 @@ import {
 } from "@/services/spotifyFetch";
 import { addCreator } from "@/firebase/addCreator";
 import { Creator, SpotifyProfile } from "../lib/interfaces";
+import { useWallet } from "@/app/contexts/WalletContext";
 
 const spotifyClientId = process.env.NEXT_PUBLIC_SPOTIFY_CLIENT_ID;
 
@@ -13,74 +14,53 @@ export function CreatorSignup() {
   // State to track Spotify connection
   const [isSpotifyConnected, setIsSpotifyConnected] = useState(false);
 
-  useEffect(() => {
-    const code = new URLSearchParams(window.location.search).get("code");
-    if (code) {
-      (async () => {
-        const profile: SpotifyProfile = await handleSpotifyAuthCallback(
-          spotifyClientId!
-        );
-        if (profile) {
-          console.log("Spotify profile fetched:", profile);
-          setSpotifyProfile(profile);
-          setIsSpotifyConnected(true);
-          setWalletButtonText("Wallet Connected");
-          if (isWalletConnected && walletAddress) {
-            const params: Creator = {
-              spotifyId: profile.spotifyId,
-              name: profile.displayName,
-              start_date: null,
-              followers: null,
-              web3_wallet: walletAddress,
-              bond: null,
-              image: profile.image,
-            };
-            addCreator(params);
-          }
-        }
-      })();
-    }
-  }, []);
-
-  const [isWalletConnected, setIsWalletConnected] = useState(false);
-  const [walletAddress, setWalletAddress] = useState("");
-  const [walletButtonText, setWalletButtonText] = useState("Link Wallet");
   const [spotifyButtonText, setSpotifyButtonText] = useState("Link Spotify");
   const [spotifyProfile, setSpotifyProfile] = useState<SpotifyProfile | null>(
     null
   );
+  const { walletButtonText, isWalletConnected, handleWalletLink } = useWallet();
+
+  useEffect(() => {
+    const code = new URLSearchParams(window.location.search).get("code");
+    if (code && !isSpotifyConnected && !spotifyProfile) {
+      (async () => {
+        const profile: SpotifyProfile | null = await handleSpotifyAuthCallback(
+          spotifyClientId!
+        );
+        console.log("Spotify profile fetched:", profile);
+
+        if (profile && profile.spotifyId) {
+          console.log("Spotify profile fetched:", profile);
+          setSpotifyProfile(profile);
+          setIsSpotifyConnected(true);
+          setSpotifyButtonText("Spotify Connected");
+
+          // Clear the code from the URL
+          const newUrl = window.location.pathname;
+          window.history.pushState({}, "", newUrl);
+        }
+        if (isSpotifyConnected && profile && isWalletConnected) {
+          console.log("I have penetrated");
+          console.log(profile);
+          addCreator({
+            spotifyId: profile.spotifyId,
+            name: profile.displayName,
+            start_date: null,
+            followers: null,
+            web3_wallet: walletButtonText,
+            bond: null,
+            image: profile.image,
+          });
+        }
+      })();
+    }
+  }, [isSpotifyConnected, spotifyProfile]);
 
   const handleSpotifyAuth = () => {
     redirectToAuthCodeFlow(spotifyClientId!);
   };
 
-  const handleWalletLink = async () => {
-    if (window.ethereum) {
-      try {
-        const accounts = await window.ethereum.request({
-          method: "eth_requestAccounts",
-        });
-        console.log("Connected wallet account:", accounts[0]);
-        setWalletAddress(accounts[0]); // Update the walletAddress state
-        setIsWalletConnected(true);
-        setWalletButtonText("Wallet Connected");
-        if (isSpotifyConnected && spotifyProfile) {
-          addCreator({
-            spotifyId: spotifyProfile.spotifyId,
-            name: spotifyProfile.displayName,
-            image: spotifyProfile.profileImage,
-            walletAddress: accounts[0],
-          });
-        }
-      } catch (error) {
-        console.error("Error connecting to wallet:", error);
-      }
-    } else {
-      console.log("Wallet is not installed!");
-    }
-  };
-
-  const onSubmit = (event) => {
+  const onSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault(); // Prevent form from submitting
     console.log("Form submission logic placeholder.");
   };
@@ -95,15 +75,6 @@ export function CreatorSignup() {
         <Button type="button" onClick={handleSpotifyAuth}>
           {spotifyButtonText}
         </Button>
-        {isSpotifyConnected && (
-          <Button
-            type="button"
-            onClick={handleWalletLink}
-            disabled={isWalletConnected}
-          >
-            {walletButtonText}
-          </Button>
-        )}
       </form>
     </div>
   );

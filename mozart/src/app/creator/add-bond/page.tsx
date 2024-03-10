@@ -16,6 +16,8 @@ import { revenueShareContract } from '@/contracts/revenueShare';
 import { format } from 'date-fns';
 import { CalendarIcon, Loader } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { addBondToCreator } from '@/firebase/firebase-helpers';
+import { Bond } from '@/lib/interfaces';
 
 const addBondSchema = z.object({
   name: z.string().min(1, "Bond name is required"),
@@ -23,7 +25,8 @@ const addBondSchema = z.object({
   bondPrice: z.string().transform((val) => parseFloat(val)).refine((val) => val > 0, "Bond price must be positive"),
   expiryDate: z.string(), // Handle date transformation in the onSubmit function
   couponIntervalMonths: z.number().min(1, "Coupon interval must be at least 1 month"),
-  supplyCap: z.string().transform((val) => parseFloat(val)).refine((val) => val > 0, "Supply cap must be positive")
+  supplyCap: z.string().transform((val) => parseFloat(val)).refine((val) => val > 0, "Supply cap must be positive"),
+  revenueSharePercentage: z.string().transform((val) => parseFloat(val)).refine((val) => val > 0, "Revenue share percentage must be positive")
 });
 
 const AddBondPage = () => {
@@ -42,7 +45,7 @@ const AddBondPage = () => {
     setIsLoading(true);
 
     try {
-      const { name, symbol, bondPrice, couponIntervalMonths, supplyCap } = values;
+      const { name, symbol, bondPrice, couponIntervalMonths, supplyCap, revenueSharePercentage } = values;
       const provider = new ethers.providers.Web3Provider((window as any).ethereum);
       await provider.send("eth_requestAccounts", []);
       const signer = provider.getSigner();
@@ -54,11 +57,27 @@ const AddBondPage = () => {
         ethers.utils.parseEther(bondPrice.toString()),
         expiryTimestamp,
         couponIntervalMonths,
-        ethers.utils.parseEther(supplyCap.toString())
+        ethers.utils.parseEther(supplyCap.toString()),
+        revenueSharePercentage
       );
 
       await contract.deployed();
       console.log("Contract deployed to:", contract.address);
+
+      const signerAddress = await signer.getAddress();
+
+      const bond: Bond = {
+          contract_address: contract.address,
+          creator: signerAddress,
+          principal_fee: bondPrice,
+          revenue_share: revenueSharePercentage,
+          expiry_date: expiryTimestamp,
+          coupon_interval: couponIntervalMonths,
+          supplyCap: supplyCap,
+      };
+
+      await addBondToCreator(signerAddress, bond);
+
       router.push(`/creator`);
     } catch (error) {
       console.error("Failed to deploy contract:", error);
@@ -126,7 +145,6 @@ const AddBondPage = () => {
             <FormItem className="mb-3">
                 <FormLabel>Coupon Interval (Months)</FormLabel>
                 <FormControl>
-                {/* Make sure the Slider's defaultValue is an array and onValueChange updates the field with the first value of the array */}
                 <Slider min={1} max={12} defaultValue={[6]} onValueChange={(value) => field.onChange(value[0])} />
                 </FormControl>
                 <FormMessage />
@@ -137,6 +155,15 @@ const AddBondPage = () => {
               <FormLabel>Supply Cap</FormLabel>
               <FormControl>
                 <Input type="number" {...field} placeholder="1000" />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )} />
+            <FormField name="revenueSharePercentage" control={form.control} render={({ field }) => (
+            <FormItem className="mb-3">
+              <FormLabel>Revenue Share Percentage</FormLabel>
+              <FormControl>
+                <Input type="percentage" {...field} placeholder="10" />
               </FormControl>
               <FormMessage />
             </FormItem>

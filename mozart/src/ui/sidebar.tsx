@@ -1,10 +1,17 @@
 "use client";
+import { FunctionComponent, useEffect, useState } from 'react';
 import { Button } from "@/ui/button";
 import { Separator } from "@/ui/separator";
 import { useMode } from "@/app/contexts/ModeContext";
 import { useRouter } from "next/navigation";
 import { RatIcon, BusIcon, BabyIcon, PlusIcon, CandlestickChart } from "lucide-react";
-import { LucideIcon } from "lucide-react/dist/lucide-react"
+import { LucideIcon } from "lucide-react/dist/lucide-react";
+import { useWallet } from "@/app/contexts/WalletContext";
+import { getFirestore, collection, query, where, getDocs } from "firebase/firestore";
+import { app } from "../firebase/firebaseConfig";
+import { ethers } from "ethers";
+
+const db = getFirestore(app);
 
 type SidebarItem = {
   name: string;
@@ -15,6 +22,36 @@ type SidebarItem = {
 export function Sidebar() {
   const { mode, setMode } = useMode();
   const router = useRouter();
+  const wallet = useWallet(); // Assuming useWallet() returns the wallet object with an address
+  const [hasBond, setHasBond] = useState(false);
+
+
+
+  useEffect(() => {
+    const checkForBond = async () => {
+      const provider = new ethers.providers.Web3Provider((window as any).ethereum);
+      await provider.send("eth_requestAccounts", []);
+      const signer = provider.getSigner();
+
+      const address = await signer.getAddress();
+
+      if (address) {
+        const creatorsRef = collection(db, "creators");
+        const q = query(creatorsRef, where("web3_wallet", "==", address));
+        const querySnapshot = await getDocs(q);
+        querySnapshot.forEach((doc) => {
+          if (doc.data().bond) {
+            setHasBond(true);
+          }
+        });
+      }
+
+      return address;
+    };
+
+    checkForBond();
+    console.log("Has bond:", hasBond);
+  }, [wallet]);
 
   const fan_routes: SidebarItem[] = [
     { name: "Discover", route: "/fan/discover", icon: RatIcon },
@@ -22,10 +59,12 @@ export function Sidebar() {
     { name: "Mother", route: "/creator/my-bond", icon: BabyIcon },
   ];
 
-  const creator_routes: SidebarItem[] = [
-    { name: "Add bond", route: "/creator/add-bond", icon: PlusIcon },
-    { name: "Bond Dashboard", route: "/creator/my-bond", icon: CandlestickChart },
-  ];
+  const creator_routes: SidebarItem[] = hasBond
+    ? [{ name: "Bond Dashboard", route: "/creator/my-bond", icon: CandlestickChart }]
+    : [
+        { name: "Add bond", route: "/creator/add-bond", icon: PlusIcon },
+        { name: "Bond Dashboard", route: "/creator/my-bond", icon: CandlestickChart },
+      ];
 
   const toggleMode = () => {
     const newMode = mode === "Fan" ? "Creator" : "Fan";
@@ -39,18 +78,26 @@ export function Sidebar() {
     <div className="flex flex-col h-screen">
       <div className="flex-1 overflow-auto py-4 space-y-4">
         <div className="py-2">
-          <div
-            className="px-3 cursor-pointer"
-            onClick={() => {
-              const targetPath =
-                mode === "Fan" ? "/fan/my-creators" : "/creator/my-bond";
-              router.push(targetPath);
-            }}
-          >
-            <h2 className="px-4 text-lg font-semibold tracking-tight">
-              My {mode === "Fan" ? "Creators" : "Fans"}
-            </h2>
-            <p className="italic px-4">{mode} View</p>
+          <div className="px-3 ">
+            <div className="px-4 ">
+              <div
+                className="cursor-pointer"
+                onClick={() => {
+                  const targetPath =
+                    mode === "Fan" ? "/fan/my-creators" : "/creator/my-bond";
+                  router.push(targetPath);
+                }}
+              >
+                <h2 className="text-lg font-semibold tracking-tight">
+                  My {mode === "Fan" ? "Creators" : "Fans"}
+                </h2>
+                <p className="italic">{mode} View</p>
+              </div>
+
+              <div className="pt-8">
+                <ConnectWalletButton></ConnectWalletButton>
+              </div>
+            </div>
           </div>
 
           <Separator className="horizontal my-2"></Separator>
@@ -107,3 +154,28 @@ export function Sidebar() {
         </div>
   );
 }
+
+const ConnectWalletButton: FunctionComponent = () => {
+  const { walletButtonText, isWalletConnected, handleWalletLink } = useWallet();
+
+  function formatWalletAddress(address: string) {
+    if (!address || address.length < 8) return address;
+    const start = address.substring(0, 5);
+    const end = address.substring(address.length - 10);
+    return `${start}...${end}`;
+  }
+
+  return (
+    <Button
+      type="button"
+      onClick={handleWalletLink}
+      disabled={isWalletConnected}
+    >
+      <p className="text-xs">
+        {isWalletConnected
+          ? formatWalletAddress(walletButtonText)
+          : walletButtonText}
+      </p>
+    </Button>
+  );
+};

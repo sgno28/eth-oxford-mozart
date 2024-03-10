@@ -12,6 +12,7 @@ contract RevenueShare is ERC20, ERC20Capped, ReentrancyGuard, Ownable {
     uint256 public expiryDate;
     uint256 public lastCouponPayment;
     uint256 public couponInterval;
+    uint256 public revenueSharePercentage; // New state variable for revenue share percentage
 
     address[] private holders;
     mapping(address => bool) private isHolder;
@@ -25,14 +26,17 @@ contract RevenueShare is ERC20, ERC20Capped, ReentrancyGuard, Ownable {
         uint256 _bondPrice,
         uint256 _expiryDate,
         uint256 _couponIntervalMonths,
-        uint256 _supplyCap
+        uint256 _supplyCap,
+        uint256 _revenueSharePercentage // Constructor parameter for revenue share percentage
     ) ERC20(name, symbol) ERC20Capped(_supplyCap) Ownable(msg.sender) {
         require(_expiryDate > block.timestamp, "Expiry date must be in the future.");
+        require(_revenueSharePercentage <= 100, "Revenue share percentage must be between 0 and 100.");
         musician = msg.sender;
         bondPrice = _bondPrice;
         expiryDate = _expiryDate;
         couponInterval = _couponIntervalMonths * 30 days;
         lastCouponPayment = block.timestamp;
+        revenueSharePercentage = _revenueSharePercentage; // Initialize the revenue share percentage
     }
 
     function buyBondTokens(uint256 numberOfBonds) public payable nonReentrant {
@@ -50,7 +54,7 @@ contract RevenueShare is ERC20, ERC20Capped, ReentrancyGuard, Ownable {
         require(block.timestamp >= lastCouponPayment + couponInterval, "Coupon payment not due yet.");
         require(block.timestamp < expiryDate, "Cannot distribute coupons after bond expiry.");
 
-        uint256 totalRevenue = address(this).balance;
+        uint256 totalRevenue = (address(this).balance * revenueSharePercentage) / 100; // Calculate the portion of the total revenue to be distributed
         require(totalRevenue > 0, "No revenue to distribute.");
 
         uint256 totalSupply = totalSupply();
