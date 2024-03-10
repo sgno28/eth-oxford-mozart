@@ -15,11 +15,12 @@ import {
 import { Progress } from "@/ui/progress";
 import { Merchandise } from "@/lib/interfaces";
 import { getMerchByContractAddress } from "@/firebase/firebase-helpers";
-import { revenueShareContract } from "@/contracts/revenueShare";
+import { merchandiseSaleContract } from "@/contracts/merchandiseSale";
 import {addPurchasedMerch} from "@/firebase/addPurchasedMerch";
+import { useWallet } from "@/app/contexts/WalletContext";
 
 
-const contractABI = revenueShareContract.abi;
+const contractABI = merchandiseSaleContract.abi;
 
 export default function MerchPage() {
   const pathname = usePathname();
@@ -28,6 +29,7 @@ export default function MerchPage() {
   const [merch, setMerch] = useState<Merchandise | null>(null);
   const [purchaseAmount, setPurchaseAmount] = useState(1);
   const [progress, setProgress] = useState(0);
+  const { walletAddress } = useWallet();
 
   useEffect(() => {
     const fetchMerch = async () => {
@@ -36,7 +38,7 @@ export default function MerchPage() {
         setMerch(merchData);
         const provider = new ethers.providers.Web3Provider((window as any).ethereum);
         const contract = new ethers.Contract(merchAddress, contractABI, provider);
-        const totalSupply = await contract.totalSupply();
+        const totalSupply = await contract.nextItemId();
         // Ensure supplyCap is a number and not undefined
         const supplyCap = Number(merchData.merchItems[0].supplyCap);
         if (!isNaN(supplyCap) && supplyCap > 0) { // Check that supplyCap is a number and greater than 0
@@ -53,45 +55,40 @@ export default function MerchPage() {
   const handlePurchase = async () => {
     if (merch && purchaseAmount > 0) {
       try {
-        const provider = new ethers.providers.Web3Provider(
-          (window as any).ethereum
-        );
+        const provider = new ethers.providers.Web3Provider((window as any).ethereum);
         await provider.send("eth_requestAccounts", []);
         const signer = provider.getSigner();
-        const contract = new ethers.Contract(
-          merch.contract_address,
-          contractABI,
-          signer
-        );
+        const contract = new ethers.Contract(merchAddress, contractABI, signer);
+    
+        const itemId = 1; // Assuming you're purchasing the first item
+        const pricePerItem = ethers.utils.parseEther(merch.merchItems[0].price.toString());
+        const totalPrice = pricePerItem.mul(purchaseAmount);
 
-        console.log(
-          "Purchasing",
-          purchaseAmount,
-          "merch tokens for price",
-          Number(merch.merchItems[0].price) * purchaseAmount,
-          "ETH"
-        );
-        console.log("Contract:", contract.address);
-        console.log("Provider:", await signer.getAddress());
-        const balance = await provider.getBalance(await signer.getAddress());
-        console.log("Balance:", ethers.utils.formatEther(balance));
+        console.log(`Address: ${merchAddress}`)
+    
+        console.log(`Purchasing item with ID ${itemId} for total price ${ethers.utils.formatEther(totalPrice)} ETH`);
 
-        // await contract.buyBondTokens(purchaseAmount, { NEED TO EDIT THIS FOR MERCH
-        //   value: ethers.utils.parseEther(
-        //     (Number(merch.merchItems[0].price) * purchaseAmount).toString()
-        //   ),
-        // });
+        console.log('test')
+        const revenueAddress = await contract.revenueShareAddress();
+        console.log(`Revenue Address: ${revenueAddress}`);
+    
+        await contract.purchaseItem(itemId, { value: totalPrice});
+    
         await addPurchasedMerch(
-          await signer.getAddress(),
+          walletAddress,
           merchAddress,
           purchaseAmount
         );
-        // Handle post-purchase logic here (e.g., update UI, show success message)
+    
+        // Update UI, show success message, etc.
       } catch (error) {
         console.error("Purchase failed:", error);
+        // Handle the error state in the UI, inform the user
       }
     }
   };
+  
+  
 
   return (
     <div className="w-full flex flex-col items-center justify-center space-y-4">

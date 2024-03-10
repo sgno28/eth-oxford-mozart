@@ -57,12 +57,12 @@ export default function ListMerchandisePage() {
       }
   
       const creatorData = querySnapshot.docs[0].data();
-      if (!creatorData.merchandiseStore) {
+      if (!creatorData.merchandise.contract_address) {
         console.error("Merchandise store address not found for creator");
         return;
       }
   
-      const contract = new ethers.Contract(creatorData.merchandiseStore, merchandiseSaleContract.abi, signer);
+      const contract = new ethers.Contract(creatorData.merchandise.contract_address, merchandiseSaleContract.abi, signer);
       setMerchandiseContract(contract);
     };
   
@@ -103,8 +103,9 @@ export default function ListMerchandisePage() {
       const merchandise: Merchandise = {
         contract_address: merchandiseContract.address,
         merchItems: [merchItem],
+        creatorName: "Creator Name"
       }
-      
+
       await addMerchandiseStoreToCreator(web3Wallet, merchandise)
       router.push('/creator'); // Adjust this path as needed
     } catch (error) {
