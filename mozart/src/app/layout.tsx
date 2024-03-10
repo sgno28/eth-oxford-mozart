@@ -18,7 +18,7 @@ export default function RootLayout({
       <body className={inter.className}>
         <WalletProvider>
           <ModeProvider>
-            <div className="hidden overflow-hidden md:block min-h-screen">
+            <div className="hidden md:block min-h-screen">
               <div className="border-t">
                 <div className="bg-background bg-[#dafef1] overflow-hidden h-full">
                   <div className="grid lg:grid-cols-5 h-full relative overflow-hidden">
@@ -44,13 +44,15 @@ export default function RootLayout({
                         </p>
                       </div>
                       <Separator className="bg-[#211f1c]"></Separator>
-                      <img
+                      {/* <img
                         src="/background.png" // Change this to your image's path
                         alt="Background"
                         className="absolute bottom-0 right-0 h-auto max-w-full m-[-350px] z-0" // Adjust the size as needed
                         style={{ maxWidth: "750px", maxHeight: "750px" }} // Optional: Adjust size
-                      />
-                      <div className="h-full bg-[#f1fffb] pt-6">{children}</div>
+                      /> */}
+                      <div className="h-full bg-[#f1fffb] pt-6 overflow-hidden">
+                        {children}
+                      </div>
                     </div>
                   </div>
                 </div>

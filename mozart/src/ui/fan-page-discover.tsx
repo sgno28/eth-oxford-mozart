@@ -54,14 +54,12 @@ export default function FanPageDiscover({ Creators }: { Creators: Creator[] }) {
         <p className="text-sm text-muted-foreground">
           Trending Creators we'd think you'd like!
         </p>
-        <div className="flex w-full space-x-4 pb-5">
+        <div className="flex w-full space-x-4 pb-2">
           {creators.map((creator, index) => (
             <TrendingCreators key={index} creator={creator} />
           ))}
         </div>
-        <h2 className="text-2xl font-semibold tracking-tight pt-10">
-          Top Creators
-        </h2>
+        <h2 className="text-2xl font-semibold tracking-tight">Top Creators</h2>
         <p className="text-sm text-muted-foreground">
           The Top 3 Creators on the platform
         </p>
@@ -87,7 +85,10 @@ function TrendingCreators({ creator }: { creator: Creator }) {
 
   return (
     <Link href={`/fan/bond/${creator.bond?.contract_address}`}>
-      <Card className="flex bg-[#f1fffb] flex-col items-center flex-shrink-0 p-4 mt-3 mb-3" style={{ minWidth: "350px", minHeight: "200px" }}>
+      <Card
+        className="flex bg-[#f1fffb] flex-col items-center flex-shrink-0 p-4 mt-3 mb-3"
+        style={{ minWidth: "350px", minHeight: "200px" }}
+      >
         <img
           src={creator.image || "https://via.placeholder.com/150"}
           alt={capitalizeName(creator.name || "")}
@@ -124,22 +125,33 @@ function TopCreators({ creator }: { creator: Creator }) {
 
   return (
     <Link href={`/fan/bond/${creator.bond?.contract_address}`}>
-      <div className="flex-none" style={{ minWidth: "350px", marginRight: "20px" }}>
-        <Card className="flex flex-col bg-[#f1fffb] justify-between items-center flex-shrink-0 p-10 gap-4" style={{ minHeight: "300px" }}>
+      <div
+        className="flex-none"
+        style={{ minWidth: "350px", marginRight: "20px" }}
+      >
+        <Card
+          className="flex flex-col bg-[#f1fffb] justify-between items-center flex-shrink-0 p-10 gap-4"
+          style={{ minHeight: "300px" }}
+        >
           <img
             src={creator.image || "https://via.placeholder.com/150"}
             alt={capitalizeName(creator.name || "")}
             className={`${imageSize} object-cover rounded-full mx-auto my-3`} // Use consistent image size
           />
           <div className="flex flex-col justify-center">
-            <CardTitle className="text-center">{capitalizeName(creator.name || "")}</CardTitle>
+            <CardTitle className="text-center">
+              {capitalizeName(creator.name || "")}
+            </CardTitle>
             <CardContent className="text-center">
               <p>{creator.bond?.principal_fee} XTZ</p>
               <p>{(creator.bond?.revenue_share || 0) * 100}%</p>
               <p>{creator.bond?.coupon_interval} Months</p>
             </CardContent>
           </div>
-          <Progress value={Math.floor(Math.random() * 100) + 1} className="w-full" />
+          <Progress
+            value={Math.floor(Math.random() * 100) + 1}
+            className="w-full"
+          />
         </Card>
       </div>
     </Link>
