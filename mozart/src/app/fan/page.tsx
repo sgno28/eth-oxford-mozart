@@ -27,6 +27,7 @@ export default function Fan() {
             web3_wallet: data.web3_wallet || null,
             bond: data.bond || null,
             image: data.image || null,
+            ticketCollections: data.ticketCollections || null,
           });
         }
       });
@@ -62,6 +63,7 @@ const dummy_creator: Creator = {
   web3_wallet: "0x1",
   bond: dummy_creator_creator_bond,
   image: null,
+  ticketCollections: [],
 };
 
 const dummy_creators: Creator[] = [
