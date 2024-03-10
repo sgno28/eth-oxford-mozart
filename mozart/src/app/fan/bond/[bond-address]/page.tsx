@@ -76,8 +76,10 @@ export default function BondPage() {
             (bond.principal_fee * purchaseAmount).toString()
           ),
         });
+
+        const address = await signer.getAddress();
         await addPurchasedBond(
-          await signer.getAddress(),
+          address,
           bondAddress,
           purchaseAmount
         );

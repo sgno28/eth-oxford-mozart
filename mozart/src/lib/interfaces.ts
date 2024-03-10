@@ -23,9 +23,12 @@ export interface SpotifyProfile {
 
 export interface Fan {
   id: string;
-  wallet: string;
-  name: string;
-  bonds_purchased: Bond[];
+  bonds_purchased: BondDetails[];
+}
+
+export interface BondDetails {
+  bond_address: string;
+  number_of_tokens: number;
 }
 
 export interface Bond {
