@@ -1,9 +1,37 @@
 import { getFirestore, doc, collection, where, query, getDocs, updateDoc, arrayUnion } from "firebase/firestore";
 import { app } from "./firebaseConfig";
 import { Bond } from "@/lib/interfaces";
-import { TicketCollection } from "@/lib/interfaces";
+import { TicketCollection, Merchandise } from "@/lib/interfaces";
 
 const db = getFirestore(app);
+
+export async function checkMerchandiseStore(signerAddress: string) {
+  const creatorsRef = collection(db, "creators");
+  const q = query(creatorsRef, where("web3_wallet", "==", signerAddress));
+  const querySnapshot = await getDocs(q);
+
+  if (!querySnapshot.empty) {
+    const merchandiseStore = querySnapshot.docs[0].data().merchandiseStore;
+    const exists = !!merchandiseStore;
+    return exists;
+  } else {
+    console.error("Creator not found in Firestore");
+    return null;
+  }
+}
+
+export async function addMerchandiseStoreToCreator(creatorAddress: string, merchandise: Merchandise) {
+    const creatorsRef = collection(db, "creators");
+    const creatorsQuery = query(creatorsRef, where("web3_wallet", "==", creatorAddress));
+    const querySnapshot = await getDocs(creatorsQuery);
+
+    if (!querySnapshot.empty) {
+        const creatorDoc = querySnapshot.docs[0];
+        await updateDoc(creatorDoc.ref, {
+            merchandise: merchandise
+        });
+    }
+}
 
 export async function addTicketCollectionToCreator(signerAddress: string, ticketCollection: TicketCollection) {
     const creatorsRef = collection(db, "creators");
