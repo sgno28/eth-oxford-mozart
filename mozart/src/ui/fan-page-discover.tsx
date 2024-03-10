@@ -16,7 +16,7 @@ export default function FanPageDiscover({ Creators }: { Creators: Creator[] }) {
         </p>
         <ScrollArea className="w-full whitespace-nowrap rounded-md border">
           <div className="flex w-max space-x-4 p-">
-            <div className="flex space-x-4 pb-1">
+            <div className="flex space-x-4 p-3">
               {Creators.map((creator: Creator, index) => (
                 <TrendingCreators creator={creator} index={index} />
               ))}
@@ -24,8 +24,9 @@ export default function FanPageDiscover({ Creators }: { Creators: Creator[] }) {
           </div>
           <ScrollBar orientation="horizontal" />
         </ScrollArea>
-        <Separator className="my-4" />
-        <h2 className="text-2xl font-semibold tracking-tight">Top Creators</h2>
+        <h2 className="text-2xl font-semibold tracking-tight pt-3">
+          Top Creators
+        </h2>
         <p className="text-sm text-muted-foreground">
           The Top 3 Creators on the platform
         </p>
