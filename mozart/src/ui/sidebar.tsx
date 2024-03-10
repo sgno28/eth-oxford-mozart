@@ -161,7 +161,8 @@ export function Sidebar() {
     <div className="flex flex-col h-screen bg-[#dafef1] border-t-2 border-r-2 border-black">
       <div className="flex-1 overflow-auto py-4 space-y-4">
         <div className="py-2">
-          <div className="px-3 ">
+          <div className="flex justify-centre px-3 ">
+            <img src="/logo.png" alt="Logo" className="h-12 w-12" />
             <div className="px-4 ">
               <div
                 className="cursor-pointer"
