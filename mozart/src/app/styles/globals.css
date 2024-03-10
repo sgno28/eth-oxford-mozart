@@ -1,6 +1,23 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@keyframes gradientBG {
+  0% {
+    background: linear-gradient(90deg, #111827, #1F2937); /* Start with a gradient from gray-900 to gray-800 */
+  }
+  50% {
+    background: linear-gradient(90deg, #1F2937, #111827); /* Midway, swap the gradient direction */
+  }
+  100% {
+    background: linear-gradient(90deg, #111827, #1F2937); /* Return to the initial state */
+  }
+}
+
+.animated-bg {
+  animation: gradientBG 10s ease infinite;
+  background-size: 400% 400%;
+}
  
 @layer base {
   :root {

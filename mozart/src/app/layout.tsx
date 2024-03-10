@@ -25,7 +25,7 @@ export default function RootLayout({
                     <Sidebar />
                     <div className="col-span-3 lg:col-span-4 lg:border-l overflow-auto">
                       <header className="text-black p-3 text-center text-xl font-bold">
-                        Arria
+                        Arya
                       </header>
                       <div className="justify-center items-center">
                         <p className="italic px-4">Invest in your creators</p>

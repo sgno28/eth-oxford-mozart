@@ -152,7 +152,7 @@ export function Sidebar() {
   };
 
   return (
-    <div className="flex flex-col h-screen">
+    <div className="flex flex-col h-screen bg-zinc-50">
       <div className="flex-1 overflow-auto py-4 space-y-4">
         <div className="py-2">
           <div className="px-3 ">
@@ -171,7 +171,7 @@ export function Sidebar() {
                 <p className="italic">{mode} View</p>
               </div>
 
-              <div className="pt-8">
+              <div className="pt-8 ml-4">
                 <ConnectWalletButton></ConnectWalletButton>
               </div>
             </div>
@@ -206,7 +206,7 @@ export function Sidebar() {
         </div>
       </div>
 
-      <div className="px-3 py-6 flex justify-center items-center">
+      <div className="px-3 py-6 flex justify-center font-medium items-center">
         <p className="px-2">Switch Mode</p>
         <div
           onClick={toggleMode}
