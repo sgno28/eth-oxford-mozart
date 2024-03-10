@@ -7,7 +7,7 @@ export interface Creator {
   bond: Bond | null;
   image: string | null;
   ticketCollections: TicketCollection[];
-  merchandise: Merchandise;
+  merchandise?: Merchandise;
 }
 
 export interface Merchandise {
@@ -47,8 +47,8 @@ export interface TicketCollection {
 
 export interface MerchItem {
   name: string;
-  price: string; 
-  supplyCap: number; 
+  price: string;
+  supplyCap: number;
   sold?: number;
   isActive?: boolean;
 }
