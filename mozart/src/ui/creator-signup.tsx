@@ -5,9 +5,7 @@ import {
   redirectToAuthCodeFlow,
 } from "@/services/spotifyFetch";
 import { addCreator } from "@/firebase/addCreator";
-import { Creator, SpotifyProfile } from "../lib/interfaces";
-
-const spotifyClientId = process.env.NEXT_PUBLIC_SPOTIFY_CLIENT_ID;
+import {SpotifyProfile } from "../lib/interfaces";
 
 export function CreatorSignup() {
   // State to track Spotify connection
