@@ -18,12 +18,12 @@ export default function RootLayout({
       <body className={inter.className}>
         <WalletProvider>
           <ModeProvider>
-            <div className="hidden md:block min-h-screen">
+            <div className="hidden overflow-hidden md:block min-h-screen">
               <div className="border-t">
-                <div className="bg-background bg-[#dafef1] h-full">
-                  <div className="grid lg:grid-cols-5 h-full">
+                <div className="bg-background bg-[#dafef1] overflow-hidden h-full">
+                  <div className="grid lg:grid-cols-5 h-full relative overflow-hidden">
                     <Sidebar />
-                    <div className="col-span-3 lg:col-span-4 lg:border-l overflow-auto relative">
+                    <div className="col-span-3 lg:col-span-4 lg:border-l overflow-hidden relative">
                       <div className="border-t-2 border-black flex items-center justify-center relative">
                         <div className="absolute inset-0 flex justify-center">
                           <img

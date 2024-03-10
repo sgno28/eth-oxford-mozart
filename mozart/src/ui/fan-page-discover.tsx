@@ -129,7 +129,7 @@ function TopCreators({ creator }: { creator: Creator }) {
           className="flex flex-col bg-[#f1fffb] justify-between items-center flex-shrink-0 p-10 gap-4"
           style={{ minHeight: "300px" }}
         >
-          <div className="flex flex-row justify-between items-center w-full">
+          <div className="flex flex-row items-center w-full">
             <img
               src={creator.image || "https://via.placeholder.com/150"}
               className="w-25 h-25 object-cover rounded-full"
