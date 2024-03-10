@@ -23,20 +23,23 @@ export function Sidebar() {
     <div className="flex flex-col h-screen">
       <div className="flex-1 overflow-auto py-4 space-y-4">
         <div className="py-2">
-          <div
-            className="px-3 cursor-pointer"
-            onClick={() => {
-              const targetPath =
-                mode === "Fan" ? "/fan/my-creators" : "/creator/my-bond";
-              router.push(targetPath);
-            }}
-          >
+          <div className="px-3 ">
             <div className="px-4 ">
-              <h2 className="text-lg font-semibold tracking-tight">
-                My {mode === "Fan" ? "Creators" : "Fans"}
-              </h2>
-              <p className="italic">{mode} View</p>
-              <div className="py-3">
+              <div
+                className="cursor-pointer"
+                onClick={() => {
+                  const targetPath =
+                    mode === "Fan" ? "/fan/my-creators" : "/creator/my-bond";
+                  router.push(targetPath);
+                }}
+              >
+                <h2 className="text-lg font-semibold tracking-tight">
+                  My {mode === "Fan" ? "Creators" : "Fans"}
+                </h2>
+                <p className="italic">{mode} View</p>
+              </div>
+
+              <div className="pt-8">
                 <ConnectWalletButton></ConnectWalletButton>
               </div>
             </div>
