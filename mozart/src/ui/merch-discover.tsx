@@ -3,6 +3,7 @@ import { getFirestore, collection, getDocs } from "firebase/firestore";
 import { app } from "@/firebase/firebaseConfig";
 import { Merchandise, TicketCollection } from "@/lib/interfaces";
 import { Card, CardTitle, CardContent } from "@/ui/card";
+import Link from "next/link";
 
 const db = getFirestore(app);
 
@@ -57,14 +58,16 @@ export default function MerchDiscover() {
 
 function TrendingMerch({ merch, cardLayout, imageLayout }: { merch: Merchandise, cardLayout: string, imageLayout: string }) {
   return (
-    <Card className={cardLayout}>
-      <CardTitle className="text-center">{merch.creatorName || "Unknown Artist"}</CardTitle>
-      {(merch.merchItems || []).map((item, index) => (
-        <div key={index} className="my-2 text-center">
-          <p>{item.name} - {item.price}</p>
-          <p>Supply Cap: {item.supplyCap}, Sold: {item.sold ?? 0}</p>
-        </div>
-      ))}
-    </Card>
+    <Link href={`/fan/ticket-marketplace/${merch.contract_address}`}>
+        <Card className={cardLayout}>
+        <CardTitle className="text-center">{merch.creatorName || "Unknown Artist"}</CardTitle>
+        {(merch.merchItems || []).map((item, index) => (
+            <div key={index} className="my-2 text-center">
+            <p>{item.name} - {item.price}</p>
+            <p>Supply Cap: {item.supplyCap}, Sold: {item.sold ?? 0}</p>
+            </div>
+        ))}
+        </Card>
+    </Link>
   );
 }
