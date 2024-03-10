@@ -40,7 +40,7 @@ export default function Fan() {
 
   return (
     <div>
-      <FanPageDiscover Creators={dummy_creators}></FanPageDiscover>
+      <FanPageDiscover Creators={trendingCreators} />
     </div>
   );
 }

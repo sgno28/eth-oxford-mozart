@@ -49,6 +49,19 @@ export async function getCreatorRevenueShareAddress(web3WalletAddress: string) {
 
 }
 
+export async function getBondByContractAddress(contractAddress: string) {
+    const creatorsRef = collection(db, "creators");
+    const bondQuery = query(creatorsRef, where("bond.contract_address", "==", contractAddress));
+    const querySnapshot = await getDocs(bondQuery);
+    
+    if (!querySnapshot.empty) {
+        const creatorDoc = querySnapshot.docs[0];
+        return creatorDoc.data().bond;
+    } else {
+        console.error("Bond not found in Firestore");
+    }
+}
+
 export async function addBondToCreator(signerAddress: string, bond: Bond) {
     const creatorsRef = collection(db, "creators");
     console.log("Adding bond to creator in Firestore:", bond);
