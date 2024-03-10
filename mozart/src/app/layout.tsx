@@ -47,8 +47,8 @@ export default function RootLayout({
                       <img
                         src="/background.png" // Change this to your image's path
                         alt="Background"
-                        className="absolute bottom-0 right-0 h-auto max-w-full" // Adjust the size as needed
-                        style={{ maxWidth: "250px", maxHeight: "250px" }} // Optional: Adjust size
+                        className="absolute bottom-0 right-0 h-auto max-w-full m-[-350px] z-0" // Adjust the size as needed
+                        style={{ maxWidth: "750px", maxHeight: "750px" }} // Optional: Adjust size
                       />
                       <div className="h-full bg-[#f1fffb] pt-6">{children}</div>
                     </div>
