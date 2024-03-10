@@ -36,6 +36,33 @@ export function Sidebar() {
   const router = useRouter();
   const wallet = useWallet(); // Assuming useWallet() returns the wallet object with an address
   const [hasBond, setHasBond] = useState(false);
+  const [hasMerchStore, setHasMerchStore] = useState(false);
+
+  useEffect(() => {
+    const checkForMerchStore = async () => {
+      const provider = new ethers.providers.Web3Provider(
+        (window as any).ethereum
+      );
+      await provider.send("eth_requestAccounts", []);
+      const signer = provider.getSigner();
+
+      const address = await signer.getAddress();
+
+      if (address) {
+        const creatorsRef = collection(db, "creators");
+        const q = query(creatorsRef, where("web3_wallet", "==", address));
+        const querySnapshot = await getDocs(q);
+        querySnapshot.forEach((doc) => {
+          if (doc.data().bond) {
+            setHasMerchStore(true);
+          }
+        });
+      }
+    };
+  
+    checkForMerchStore();
+    console.log(hasMerchStore)
+  }, []);
 
   useEffect(() => {
     const checkForBond = async () => {
@@ -63,6 +90,7 @@ export function Sidebar() {
 
     checkForBond();
     console.log("Has bond:", hasBond);
+    console.log("Has merch store:", hasMerchStore);
   }, [wallet]);
 
   const fan_routes: SidebarItem[] = [
@@ -74,7 +102,7 @@ export function Sidebar() {
     },
   ];
 
-  const creator_routes: SidebarItem[] = hasBond
+  const creator_routes: SidebarItem[] = hasBond && hasMerchStore
     ? [
         {
           name: "Bond Dashboard",
@@ -91,8 +119,13 @@ export function Sidebar() {
           route: "/creator/my-tickets",
           icon: TicketCheckIcon,
         },
+        {
+          name: "List Merchandise",
+          route: "/creator/list-merchandise",
+          icon: StoreIcon,
+        }
       ]
-    : [
+    : (hasBond && !hasMerchStore ? [
         { name: "Add bond", route: "/creator/add-bond", icon: PlusIcon },
         {
           name: "Create Tickets",
@@ -104,7 +137,11 @@ export function Sidebar() {
           route: "/creator/my-tickets",
           icon: TicketCheckIcon,
         },
-      ];
+        {
+          name: "Set up merchandise store",
+          route: "/creator/set-up-merchandise-store",
+          icon: StoreIcon,
+        }] : [{ name: "Add bond", route: "/creator/add-bond", icon: PlusIcon }]);
 
   const toggleMode = () => {
     const newMode = mode === "Fan" ? "Creator" : "Fan";
