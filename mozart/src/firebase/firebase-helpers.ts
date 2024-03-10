@@ -25,11 +25,14 @@ export async function addMerchandiseStoreToCreator(creatorAddress: string, merch
     const creatorsQuery = query(creatorsRef, where("web3_wallet", "==", creatorAddress));
     const querySnapshot = await getDocs(creatorsQuery);
 
+    console.log("Adding merchandise to creator in Firestore:", merchandise);
+
     if (!querySnapshot.empty) {
         const creatorDoc = querySnapshot.docs[0];
         await updateDoc(creatorDoc.ref, {
             merchandise: merchandise
         });
+        console.log("Merchandise added to Creator in Firestore:", merchandise);
     }
 }
 
@@ -59,6 +62,20 @@ export async function getTicketCollectionsByCreator(walletAddress: string) {
     } else {
       console.error("Creator not found in Firestore");
       return [];
+    }
+  }
+
+export async function getBondContractAddress(walletAddress: string) {
+    const creatorsRef = collection(db, "creators");
+    const q = query(creatorsRef, where("web3_wallet", "==", walletAddress));
+    const querySnapshot = await getDocs(q);
+  
+    if (!querySnapshot.empty) {
+      const docData = querySnapshot.docs[0].data();
+      return docData.bond.contract_address;
+    } else {
+      console.error("Creator not found in Firestore");
+      return null;
     }
   }
 

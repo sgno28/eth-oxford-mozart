@@ -7,6 +7,7 @@ import { Button } from '@/ui/button';
 import { merchandiseSaleContract } from '@/contracts/merchandiseSale'; // Adjust the import path according to your project structure
 import { addMerchandiseStoreToCreator } from '@/firebase/firebase-helpers'; // Ensure this function exists to update Firestore
 import { Merchandise } from '@/lib/interfaces'
+import { getBondContractAddress } from '@/firebase/firebase-helpers';
 
 export default function DeployStorePage() {
   const router = useRouter();
@@ -20,13 +21,17 @@ export default function DeployStorePage() {
     const provider = new ethers.providers.Web3Provider(window.ethereum);
     await provider.send('eth_requestAccounts', []);
     const signer = provider.getSigner();
+    const userAddress = await signer.getAddress();
 
     const contractFactory = new ethers.ContractFactory(
       merchandiseSaleContract.abi,
       merchandiseSaleContract.bytecode,
       signer
     );
-    const merchandiseSale = await contractFactory.deploy(signer.getAddress());
+
+    const revenueShareAddress = getBondContractAddress(userAddress)
+
+    const merchandiseSale = await contractFactory.deploy(revenueShareAddress);
     await merchandiseSale.deployed();
 
     console.log('MerchandiseSale deployed to:', merchandiseSale.address);
@@ -38,6 +43,7 @@ export default function DeployStorePage() {
     const merchandise: Merchandise = {
         contract_address: merchandiseSale.address,
         merchItems: [],
+        creatorName: '',
     };
 
     await addMerchandiseStoreToCreator(creatorAddress, merchandise);
