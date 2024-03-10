@@ -27,8 +27,12 @@ export interface Fan {
 }
 
 export interface BondDetails {
+  bond_name: string;
   bond_address: string;
   number_of_tokens: number;
+  revenue_share: number;
+  principal_fee: number;
+  supplyCap: number;
 }
 
 export interface Bond {

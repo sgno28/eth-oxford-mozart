@@ -17,6 +17,7 @@ import { getBondByContractAddress } from "@/firebase/firebase-helpers";
 import { Bond } from "@/lib/interfaces";
 import { revenueShareContract } from "@/contracts/revenueShare";
 import { addPurchasedBond } from "@/firebase/addPurchasedBond";
+import { useWallet } from "@/app/contexts/WalletContext";
 
 const contractABI = revenueShareContract.abi;
 
@@ -27,6 +28,7 @@ export default function BondPage() {
   const [bond, setBond] = useState<Bond | null>(null);
   const [purchaseAmount, setPurchaseAmount] = useState(1);
   const [progress, setProgress] = useState(0);
+  const { walletAddress } = useWallet();
 
   useEffect(() => {
     const fetchBond = async () => {
@@ -77,11 +79,14 @@ export default function BondPage() {
           ),
         });
 
-        const address = await signer.getAddress();
         await addPurchasedBond(
-          address,
+          walletAddress,
+          "BOND",
           bondAddress,
-          purchaseAmount
+          purchaseAmount,
+          bond.principal_fee,
+          bond.revenue_share,
+          bond.supplyCap
         );
         // Handle post-purchase logic here (e.g., update UI, show success message)
       } catch (error) {

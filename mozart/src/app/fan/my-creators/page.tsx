@@ -12,10 +12,11 @@ import {
 import { fetchMyBonds } from "@/firebase/fetchMyBonds";
 import { useState, useEffect } from "react";
 import { useWallet } from "@/app/contexts/WalletContext";
+import { BondDetails } from "@/lib/interfaces";
 
 export default function MyCreators() {
   // Initialize state to hold fetched bonds
-  const [bonds, setBonds] = useState<Bond[]>([]);
+  const [bonds, setBonds] = useState<BondDetails[]>([]);
   const { walletAddress } = useWallet();
   // Assuming 'fan_address' is available. Replace 'your_fan_address' with actual fan address.
   const fan_address = walletAddress;
@@ -25,7 +26,9 @@ export default function MyCreators() {
     const fetchData = async () => {
       const fetchedBonds = await fetchMyBonds(fan_address);
       console.log(fetchedBonds);
+      setBonds(fetchedBonds);
     };
+
 
     fetchData();
   }, [fan_address]); // Depend on fan_address to refetch if it changes
@@ -45,13 +48,13 @@ export default function MyCreators() {
     </div>
   );
 }
-function BondCard({ bond }: { bond: Bond }) {
+function BondCard({ bond }: { bond: BondDetails }) {
   return (
-    <Link href={`/fan/bond/${bond.contract_address}`}>
+    <Link href={`/fan/bond/${bond.bond_address}`}>
       <Card className="bg-white shadow-lg rounded-lg overflow-hidden">
         <CardHeader>
           <CardTitle className="text-lg font-bold">
-            {bond.contract_address}
+            {bond.bond_name}
           </CardTitle>
         </CardHeader>
         <CardContent>

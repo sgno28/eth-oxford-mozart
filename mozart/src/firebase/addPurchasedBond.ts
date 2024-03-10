@@ -12,14 +12,22 @@ const db = getFirestore(app);
 
 const addPurchasedBond = async (
   fan_address: string,
+  name: string,
   bond_address: string,
-  amountPurchased: number
+  amountPurchased: number,
+  revenue_share: number,
+  principal_fee: number,
+  supplyCap: number,
 ) => {
   const bondDocRef = doc(db, 'fans', fan_address);
 
   const bondType: BondDetails = {
+    bond_name: name,
     bond_address: bond_address,
     number_of_tokens: amountPurchased,
+    revenue_share: revenue_share,
+    principal_fee: principal_fee,
+    supplyCap: supplyCap,
   }
 
   // Check if the bond document exists

@@ -1,6 +1,6 @@
 import { getFirestore, collection, query, getDocs, doc, getDoc } from "firebase/firestore";
 import { app } from "./firebaseConfig";
-import { Fan } from "@/lib/interfaces";
+import { BondDetails, Fan } from "@/lib/interfaces";
 
 const db = getFirestore(app);
 
@@ -17,13 +17,17 @@ export const fetchMyBonds = async (fan_address: string) => {
     }
 
     const fanData = docSnapshot.data() as Fan; // Cast the document data to the Fan type
-    const bonds: { bond_address: string; number_of_tokens: number }[] = [];
+    const bonds: BondDetails[] = [];
 
     // Iterate over each bond in the bonds_purchased array and push it to the bonds array
     fanData.bonds_purchased.forEach((bond) => {
       bonds.push({
+        bond_name: bond.bond_name,
         bond_address: bond.bond_address,
         number_of_tokens: bond.number_of_tokens,
+        revenue_share: bond.revenue_share,
+        principal_fee: bond.principal_fee,
+        supplyCap: bond.supplyCap,
       });
     });
 
