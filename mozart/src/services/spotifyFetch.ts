@@ -43,6 +43,7 @@ export async function getAccessToken(
   code: string
 ): Promise<string> {
   const verifier = localStorage.getItem("verifier");
+  console.log("Verifier: ", verifier);
 
   const params = new URLSearchParams();
   params.append("client_id", clientId);
@@ -72,11 +73,11 @@ export async function fetchProfile(token: string): Promise<any> {
 export async function handleSpotifyAuthCallback(clientId: string) {
   const params = new URLSearchParams(window.location.search);
   const code = params.get("code");
-  console.log("COde", code);
-  console.log("Client Id", clientId);
   if (code && clientId) {
     try {
       const accessToken = await getAccessToken(clientId, code);
+      localStorage.setItem("accessToken", accessToken);
+      console.log("Access token", accessToken);
       const profile = await fetchProfile(accessToken);
       console.log("inside", profile);
 

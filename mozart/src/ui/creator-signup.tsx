@@ -6,7 +6,6 @@ import {
 } from "@/services/spotifyFetch";
 import { addCreator } from "@/firebase/addCreator";
 import { Creator, SpotifyProfile } from "../lib/interfaces";
-import { useWallet } from "@/app/contexts/WalletContext";
 
 const spotifyClientId = process.env.NEXT_PUBLIC_SPOTIFY_CLIENT_ID;
 
@@ -18,11 +17,22 @@ export function CreatorSignup() {
   const [spotifyProfile, setSpotifyProfile] = useState<SpotifyProfile | null>(
     null
   );
-  const { walletButtonText, isWalletConnected, handleWalletLink } = useWallet();
 
   useEffect(() => {
     const code = new URLSearchParams(window.location.search).get("code");
-    if (code && !isSpotifyConnected && !spotifyProfile) {
+    const isWalletConnected =
+      localStorage.getItem("isWalletConnected") === "true";
+    const walletAddress = localStorage.getItem("walletAddress");
+    const accessToken = localStorage.getItem("accessToken") === "true";
+    console.log("accessToken inital effect", accessToken);
+    if (
+      code &&
+      !isSpotifyConnected &&
+      !spotifyProfile &&
+      isWalletConnected &&
+      !accessToken
+    ) {
+      console.log("Entered");
       (async () => {
         const profile: SpotifyProfile | null = await handleSpotifyAuthCallback(
           spotifyClientId!
@@ -34,23 +44,19 @@ export function CreatorSignup() {
           setSpotifyProfile(profile);
           setIsSpotifyConnected(true);
           setSpotifyButtonText("Spotify Connected");
-
-          // Clear the code from the URL
-          const newUrl = window.location.pathname;
-          window.history.pushState({}, "", newUrl);
-        }
-        if (isSpotifyConnected && profile && isWalletConnected) {
-          console.log("I have penetrated");
-          console.log(profile);
           addCreator({
             spotifyId: profile.spotifyId,
             name: profile.displayName,
             start_date: null,
             followers: null,
-            web3_wallet: walletButtonText,
+            web3_wallet: walletAddress,
             bond: null,
             image: profile.image,
           });
+          // Clear the code from the URL
+          const newUrl = window.location.pathname;
+          window.history.pushState({}, "", newUrl);
+          localStorage.removeItem("accessToken");
         }
       })();
     }
