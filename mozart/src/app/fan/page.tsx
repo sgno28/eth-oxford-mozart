@@ -40,44 +40,7 @@ export default function Fan() {
 
   return (
     <div>
-      <FanPageDiscover Creators={dummy_creators}></FanPageDiscover>
+      <FanPageDiscover Creators={trendingCreators} />
     </div>
   );
 }
-
-const dummy_creator_creator_bond: Bond = {
-  contract_address: "0x1",
-  creator: "firstname lastname",
-  principal_fee: 50,
-  revenue_share: 0.01,
-  expiry_date: 1712711617,
-  coupon_interval: 5,
-  supplyCap: 50,
-};
-
-const dummy_creator: Creator = {
-  spotifyId: "c1",
-  name: "test",
-  start_date: 1704852817,
-  followers: null,
-  web3_wallet: "0x1",
-  bond: dummy_creator_creator_bond,
-  image: null,
-  ticketCollections: [],
-};
-
-const dummy_creators: Creator[] = [
-  dummy_creator,
-  dummy_creator,
-  dummy_creator,
-  dummy_creator,
-  dummy_creator,
-  dummy_creator,
-  dummy_creator,
-  dummy_creator,
-  dummy_creator,
-  dummy_creator,
-  dummy_creator,
-  dummy_creator,
-  dummy_creator,
-];
