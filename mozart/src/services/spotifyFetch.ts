@@ -1,5 +1,4 @@
 import { SpotifyProfile } from "@/lib/interfaces";
-const clientId = process.env.REACT_APP_SPOTIFY_CLIENT_ID;
 
 export async function redirectToAuthCodeFlow(clientId: string) {
   const verifier = generateCodeVerifier(128);
@@ -67,41 +66,19 @@ export async function fetchProfile(token: string): Promise<any> {
     method: "GET",
     headers: { Authorization: `Bearer ${token}` },
   });
-  const res = await result.json();
-  console.log(res);
-
-  return res;
-}
-
-export async function signUpAsArtist(token: string, clientId: string) {
-  // Fetch user profile
-  const profile = await fetchProfile(token);
-
-  // Extract user's URI and name from the profile
-  const { uri, display_name } = profile;
-
-  // Perform signup process using the user's URI and name
-  // This could involve making a POST request to your backend API endpoint
-  // to sign up the user as an artist and providing their URI and name
-  // Example:
-  // await fetch("http://your-backend-api/signup", {
-  //   method: "POST",
-  //   headers: { "Content-Type": "application/json" },
-  //   body: JSON.stringify({ uri, name: display_name }),
-  // });
-
-  // Redirect to the signup page
+  return await result.json();
 }
 
 export async function handleSpotifyAuthCallback(clientId: string) {
   const params = new URLSearchParams(window.location.search);
   const code = params.get("code");
+  console.log("COde", code);
+  console.log("Client Id", clientId);
   if (code && clientId) {
     try {
       const accessToken = await getAccessToken(clientId, code);
       const profile = await fetchProfile(accessToken);
-      console.log(profile);
-      console.log(profile.images[0].url);
+      console.log("inside", profile);
 
       const res: SpotifyProfile = {
         displayName: profile.display_name,
@@ -111,7 +88,7 @@ export async function handleSpotifyAuthCallback(clientId: string) {
 
       return res;
     } catch (error) {
-      console.error("Error:", error);
+      console.error("Error getting access token:", error);
       const resError: SpotifyProfile = {
         displayName: null,
         spotifyId: null,
