@@ -22,6 +22,7 @@ export function CreatorSignup() {
 
   useEffect(() => {
     const code = new URLSearchParams(window.location.search).get("code");
+    console.log("wallet initial", isWalletConnected);
     if (code && !isSpotifyConnected && !spotifyProfile) {
       (async () => {
         const profile: SpotifyProfile | null = await handleSpotifyAuthCallback(
@@ -39,6 +40,7 @@ export function CreatorSignup() {
           const newUrl = window.location.pathname;
           window.history.pushState({}, "", newUrl);
         }
+        console.log(isSpotifyConnected, profile, isWalletConnected);
         if (isSpotifyConnected && profile && isWalletConnected) {
           console.log("I have penetrated");
           console.log(profile);
@@ -49,7 +51,8 @@ export function CreatorSignup() {
             followers: null,
             web3_wallet: walletButtonText,
             bond: null,
-            image: profile.image,
+            image: profile.image || null,
+            ticketCollections: [],
           });
         }
       })();

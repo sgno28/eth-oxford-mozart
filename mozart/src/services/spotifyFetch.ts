@@ -79,11 +79,14 @@ export async function handleSpotifyAuthCallback(clientId: string) {
       const accessToken = await getAccessToken(clientId, code);
       const profile = await fetchProfile(accessToken);
       console.log("inside", profile);
-
+      let image_retrieved = null;
+      if (profile.images[0]) {
+        image_retrieved = profile.images[0]?.url;
+      }
       const res: SpotifyProfile = {
         displayName: profile.display_name,
         spotifyId: profile.id,
-        image: profile.images[0]?.url,
+        image: image_retrieved,
       };
 
       return res;

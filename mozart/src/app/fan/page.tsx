@@ -45,9 +45,9 @@ export default function Fan() {
   );
 }
 
-const dummy_creator_creator_bond: Bond = {
+const dummy_creator_bond: Bond = {
   contract_address: "0x1",
-  creator: "firstname lastname",
+  creator: "0x2",
   principal_fee: 50,
   revenue_share: 0.01,
   expiry_date: 1712711617,
@@ -61,7 +61,7 @@ const dummy_creator: Creator = {
   start_date: 1704852817,
   followers: null,
   web3_wallet: "0x1",
-  bond: dummy_creator_creator_bond,
+  bond: dummy_creator_bond,
   image: null,
   ticketCollections: [],
 };

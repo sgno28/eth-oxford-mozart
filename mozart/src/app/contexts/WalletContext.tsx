@@ -43,10 +43,14 @@ export const WalletProvider: FunctionComponent<WalletProviderProps> = ({
         const accounts = await window.ethereum.request({
           method: "eth_requestAccounts",
         });
-        console.log("Connected wallet account:", accounts[0]);
         setWalletAddress(accounts[0]);
         setIsWalletConnected(true);
         setWalletButtonText(accounts[0]);
+        console.log(
+          "Connected wallet account:",
+          accounts[0],
+          isWalletConnected
+        );
       } catch (error) {
         console.error("Error connecting to wallet:", error);
       }
