@@ -28,6 +28,7 @@ export default function Fan() {
             bond: data.bond || null,
             image: data.image || null,
             ticketCollections: data.ticketCollections || null,
+            merchandise: data.merchandise || null,
           });
         }
       });

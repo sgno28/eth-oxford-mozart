@@ -31,6 +31,7 @@ export default function FanPageDiscover({ Creators }: { Creators: Creator[] }) {
               bond: data.bond,
               image: data.image,
               ticketCollections: data.ticketCollections || null,
+              merchandise: data.merchandise || null,
             });
           }
         });
