@@ -4,7 +4,13 @@ import { Button } from "@/ui/button";
 import { Separator } from "@/ui/separator";
 import { useMode } from "@/app/contexts/ModeContext";
 import { useRouter } from "next/navigation";
-import { StoreIcon, TicketIcon, PlusIcon, CandlestickChart, TicketCheckIcon } from "lucide-react";
+import {
+  StoreIcon,
+  TicketIcon,
+  PlusIcon,
+  CandlestickChart,
+  TicketCheckIcon,
+} from "lucide-react";
 import { LucideIcon } from "lucide-react/dist/lucide-react";
 import { useWallet } from "@/app/contexts/WalletContext";
 import {
@@ -60,17 +66,45 @@ export function Sidebar() {
   }, [wallet]);
 
   const fan_routes: SidebarItem[] = [
-    { name: "Creator Marketplace", route: "/fan/discover", icon: StoreIcon },
-    { name: "Ticket Marketplace", route: "/fan/ticket-marketplace", icon: TicketIcon }
+    { name: "Creator Marketplace", route: "/fan", icon: StoreIcon },
+    {
+      name: "Ticket Marketplace",
+      route: "/fan/ticket-marketplace",
+      icon: TicketIcon,
+    },
   ];
 
   const creator_routes: SidebarItem[] = hasBond
-    ? [{ name: "Bond Dashboard", route: "/creator/my-bond", icon: CandlestickChart },
-       { name: "Create Tickets", route: "/creator/create-tickets", icon: TicketIcon },
-       { name: "My Tickets", route: "/creator/my-tickets", icon: TicketCheckIcon }]
-    : [{ name: "Add bond", route: "/creator/add-bond", icon: PlusIcon },
-       { name: "Create Tickets", route: "/creator/create-tickets", icon: TicketIcon },
-       { name: "My Tickets", route: "/creator/my-tickets", icon: TicketCheckIcon }];
+    ? [
+        {
+          name: "Bond Dashboard",
+          route: "/creator/my-bond",
+          icon: CandlestickChart,
+        },
+        {
+          name: "Create Tickets",
+          route: "/creator/create-tickets",
+          icon: TicketIcon,
+        },
+        {
+          name: "My Tickets",
+          route: "/creator/my-tickets",
+          icon: TicketCheckIcon,
+        },
+      ]
+    : [
+        { name: "Add bond", route: "/creator/add-bond", icon: PlusIcon },
+        {
+          name: "Create Tickets",
+          route: "/creator/create-tickets",
+          icon: TicketIcon,
+        },
+        {
+          name: "My Tickets",
+          route: "/creator/my-tickets",
+          icon: TicketCheckIcon,
+        },
+      ];
 
   const toggleMode = () => {
     const newMode = mode === "Fan" ? "Creator" : "Fan";
