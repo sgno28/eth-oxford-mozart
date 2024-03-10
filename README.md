@@ -19,5 +19,28 @@ Built on Tezos Etherlink, Arya ensures secure and transparent transactions, maki
 - **Frontend**: Built with Next.js, offering a seamless and interactive user experience.
 - **Authentication**: Spotify OAuth for creator authentication and profile details extraction.
 
+## Quick Start
+
+1. Clone the repository
+2.  Install dependencies
+    npm install
+3. Set up environment variables
+4. Start the development server
+    npm run dev
+
+## Usage
+
+After starting Arya, navigate to `http://localhost:3000` to explore the marketplace. Here's how you can start investing in creators:
+
+- **Browse Creators**: Visit the Creator Marketplace to see available bonds.
+- **Invest in Bonds**: Select a bond to view details and make a purchase.
+- **Purchase Merchandise**: Visit the Merch Marketplace to buy unique items from your favourite artists.
+- **Secure Event Tickets**: Check out upcoming events and secure your tickets through the Ticket Marketplace.
+
+Enjoy :)
+
+
+
+
 
 
