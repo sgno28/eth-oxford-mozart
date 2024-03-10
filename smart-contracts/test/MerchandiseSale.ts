@@ -21,7 +21,8 @@ describe("MerchandiseSale Contract", function () {
       itemPrice,
       Math.floor(Date.now() / 1000) + 365 * 24 * 60 * 60, // Set expiry date to 1 year from now
       6, // Coupon payment every 6 months
-      ethers.parseEther("1000") // Cap at 1000 Tokens
+      ethers.parseEther("1000"),
+      10
     )) as RevenueShare;
 
     // Deploy MerchandiseSale with the address of the RevenueShare contract
