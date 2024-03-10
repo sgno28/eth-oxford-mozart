@@ -34,11 +34,11 @@ export default function DeployStorePage() {
     const merchandiseSale = await contractFactory.deploy(revenueShareAddress);
     await merchandiseSale.deployed();
 
-    console.log('MerchandiseSale deployed to:', merchandiseSale.address);
+    
 
     // Add the contract address to Firestore under the creator's object
     const creatorAddress = await signer.getAddress();
-    console.log('Creator address:', creatorAddress);
+    
 
     const merchandise: Merchandise = {
         contract_address: merchandiseSale.address,

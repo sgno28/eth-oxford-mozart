@@ -71,8 +71,8 @@ export default function ListMerchandisePage() {
 
   
   const onSubmit = async (data: any) => {
-    console.log(data);
-    console.log(`Address: ${merchandiseContract!.address}`)
+    
+    
     if (!merchandiseContract) {
       console.error("Merchandise contract not initialized");
       return;
@@ -90,7 +90,7 @@ export default function ListMerchandisePage() {
       );
 
       await transaction.wait(); // Wait for the transaction to be mined
-      console.log("Merchandise item added successfully");
+      
 
       const merchItem: MerchItem = {
         name: data.name,

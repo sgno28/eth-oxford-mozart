@@ -49,7 +49,7 @@ export default function MyBond() {
     fetchBond();
   }, []);
 
-  console.log("Bond:", bond);
+  
 
   return (
     <>
