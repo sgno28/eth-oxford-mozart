@@ -1,17 +1,10 @@
 import { ScrollArea, ScrollBar } from "@/ui/scroll-area";
 import { Separator } from "@/ui/separator";
-import { Creator, Bond } from "@/lib/interfaces";
-import {
-  Card,
-  CardHeader,
-  CardFooter,
-  CardTitle,
-  CardDescription,
-  CardContent,
-} from "@/ui/card";
+import { Creator } from "@/lib/interfaces";
+import { Card, CardTitle, CardContent } from "@/ui/card";
 import { Progress } from "@/ui/progress";
 
-export default function FanPageDiscover() {
+export default function FanPageDiscover({ Creators }: { Creators: Creator[] }) {
   return (
     <>
       <div className="px-5 py-2">
@@ -24,7 +17,7 @@ export default function FanPageDiscover() {
         <ScrollArea className="w-full whitespace-nowrap rounded-md border">
           <div className="flex w-max space-x-4 p-">
             <div className="flex space-x-4 pb-1">
-              {dummy_creators.map((creator: Creator, index) => (
+              {Creators.map((creator: Creator, index) => (
                 <TrendingCreators creator={creator} index={index} />
               ))}
             </div>
@@ -36,8 +29,8 @@ export default function FanPageDiscover() {
         <p className="text-sm text-muted-foreground">
           The Top 3 Creators on the platform
         </p>
-        <div className="flex flex-row justify-between items-center w-full p-10 overflow-x-auto">
-          {dummy_creators.slice(0, 3).map((creator: Creator, index) => (
+        <div className="flex flex-row justify-between items-center w-full p-4 overflow-x-auto">
+          {Creators.slice(0, 3).map((creator: Creator, index) => (
             <TopCreators creator={creator} index={index}></TopCreators>
           ))}
         </div>
@@ -130,39 +123,3 @@ function TopCreators({ creator, index }: { creator: Creator; index: number }) {
     </div>
   );
 }
-
-const dummy_creator_creator_bond: Bond = {
-  contract_address: "0x1",
-  creator: "firstname lastname",
-  principal_fee: 50,
-  revenue_share: 0.01,
-  expiry_date: 1712711617,
-  coupon_interval: 5,
-  supplyCap: 50,
-};
-
-const dummy_creator: Creator = {
-  spotifyId: "c1",
-  name: "test",
-  start_date: 1704852817,
-  followers: null,
-  web3_wallet: "0x1",
-  bond: dummy_creator_creator_bond,
-  image: null,
-};
-
-const dummy_creators: Creator[] = [
-  dummy_creator,
-  dummy_creator,
-  dummy_creator,
-  dummy_creator,
-  dummy_creator,
-  dummy_creator,
-  dummy_creator,
-  dummy_creator,
-  dummy_creator,
-  dummy_creator,
-  dummy_creator,
-  dummy_creator,
-  dummy_creator,
-];
