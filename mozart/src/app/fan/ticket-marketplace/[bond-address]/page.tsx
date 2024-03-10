@@ -14,7 +14,7 @@ import {
 } from "@/ui/card";
 import { Progress } from "@/ui/progress";
 import { TicketCollection } from "@/lib/interfaces";
-import { getTicketByContractAddress } from "@/firebase/firebase-helpers";
+import { getTicketByContractAddress} from "@/firebase/firebase-helpers";
 import { revenueShareContract } from "@/contracts/revenueShare";
 import {addPurchasedTicket} from "@/firebase/addPurchasedTicket";
 
@@ -100,7 +100,7 @@ export default function ticketPage() {
               <CardTitle>{ticket.address}</CardTitle>
             </CardHeader>
             <CardContent>
-              <CardDescription>Price: {ticket.ticketPrice} ETH</CardDescription>
+              <CardDescription>Price: {ticket.ticketPrice} XTZ</CardDescription>
               <Progress value={progress} max={100} />
             </CardContent>
           </Card>
