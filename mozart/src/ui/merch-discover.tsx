@@ -22,7 +22,7 @@ export default function MerchDiscover() {
           
           if (data.merchandise && data.merchandise.merchItems) {
             fetchedMerch.push({
-              contract_address: data.contract_address || null,
+              contract_address: data.merchandise.contract_address || null,
               merchItems: data.merchandise.merchItems,
               creatorName: data.name,
             });
@@ -58,7 +58,7 @@ export default function MerchDiscover() {
 
 function TrendingMerch({ merch, cardLayout, imageLayout }: { merch: Merchandise, cardLayout: string, imageLayout: string }) {
   return (
-    <Link href={`/fan/ticket-marketplace/${merch.contract_address}`}>
+    <Link href={`/fan/merch-marketplace/${merch.contract_address}`}>
         <Card className={cardLayout}>
         <CardTitle className="text-center">{merch.creatorName || "Unknown Artist"}</CardTitle>
         {(merch.merchItems || []).map((item, index) => (
