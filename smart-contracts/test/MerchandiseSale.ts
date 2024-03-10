@@ -31,7 +31,7 @@ describe("MerchandiseSale Contract", function () {
   });
 
   it("Should allow owner to add new merchandise items", async function () {
-    await merchandiseSale.connect(owner).addItem(1, "T-Shirt", itemPrice, supplyCap);
+    await merchandiseSale.connect(owner).addItem("T-Shirt", itemPrice, supplyCap);
     const item = await merchandiseSale.merchCatalog(1);
 
     expect(item.name).to.equal("T-Shirt");
@@ -42,7 +42,7 @@ describe("MerchandiseSale Contract", function () {
   });
 
   it("Should allow users to purchase merchandise items", async function () {
-    await merchandiseSale.connect(owner).addItem(1, "T-Shirt", itemPrice, supplyCap);
+    await merchandiseSale.connect(owner).addItem("T-Shirt", itemPrice, supplyCap);
     const revenueShareAddress = await revenueShare.getAddress();
     const initialRevenueShareBalance = await ethers.provider.getBalance(revenueShareAddress);
 
@@ -58,7 +58,7 @@ describe("MerchandiseSale Contract", function () {
   });
 
   it("Should enforce supply cap on merchandise items", async function () {
-    await merchandiseSale.connect(owner).addItem(1, "T-Shirt", itemPrice, 1); // Supply cap of 1
+    await merchandiseSale.connect(owner).addItem("T-Shirt", itemPrice, 1); // Supply cap of 1
 
     await merchandiseSale.connect(user1).purchaseItem(1, { value: itemPrice });
 

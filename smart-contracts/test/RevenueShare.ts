@@ -6,9 +6,9 @@ describe("RevenueShare Contract", function () {
   let revenueShare: RevenueShare;
   let owner: any, user1: any, user2: any;
   const bondPrice = ethers.parseEther("1"); // 1 ETH
-  const rate = ethers.parseEther("1"); // 1 Token per 1 ETH
   const supplyCap = ethers.parseEther("1000"); // Cap at 1000 Tokens
   const couponIntervalMonths = 6; // Coupon payment every 6 months
+  const revenueSharePercentage = 50; // 50% of the revenue is shared
 
   beforeEach(async function () {
     [owner, user1, user2] = await ethers.getSigners();
@@ -21,10 +21,11 @@ describe("RevenueShare Contract", function () {
       bondPrice,
       futureExpiryDate,
       couponIntervalMonths,
-      supplyCap
+      supplyCap,
+      revenueSharePercentage
     )) as RevenueShare;
 
-    revenueShare.waitForDeployment;
+    await revenueShare.waitForDeployment();
   });
 
   it("Should allow users to buy bond tokens", async function () {
@@ -32,7 +33,7 @@ describe("RevenueShare Contract", function () {
     await buyTx1.wait();
 
     const balanceUser1 = await revenueShare.balanceOf(user1.address);
-    expect(balanceUser1).to.equal(bondPrice / rate);
+    expect(balanceUser1).to.equal(1); // User should have 1 bond token
   });
 
   it("Should distribute coupon payments correctly", async function () {
@@ -43,13 +44,14 @@ describe("RevenueShare Contract", function () {
     await ethers.provider.send("evm_increaseTime", [couponIntervalMonths * 30 * 24 * 3600]); // Approx. 6 months in seconds
     await ethers.provider.send("evm_mine", []);
 
-    const contractInitialBalance = bondPrice * ethers.toBigInt(2); // Both users bought tokens
+    const revenueShareAddress = await revenueShare.getAddress();
+    const contractInitialBalance = await ethers.provider.getBalance(revenueShareAddress);
     await revenueShare.connect(owner).depositRevenue({ value: contractInitialBalance });
 
     const distributeTx = await revenueShare.connect(owner).distributeCoupon();
     await distributeTx.wait();
 
-    // Users should have received coupon payments, thus having more ETH than the initial bond price
+    // Users should have received coupon payments, thus having more ETH than initially, considering the revenue share percentage
     const user1FinalBalance = await ethers.provider.getBalance(user1.address);
     const user2FinalBalance = await ethers.provider.getBalance(user2.address);
 
@@ -61,7 +63,7 @@ describe("RevenueShare Contract", function () {
     await revenueShare.connect(user1).buyBondTokens(1, { value: bondPrice });
 
     await expect(
-      revenueShare.connect(user1).transfer(user2.address, ethers.parseEther("1"))
+      revenueShare.connect(user1).transfer(user2.address, 1)
     ).to.be.revertedWith("Tokens are non-transferrable.");
   });
 });

@@ -1,47 +1,81 @@
-import React from 'react';
-import { Button } from '@/ui/button';
-import { redirectToAuthCodeFlow } from '../../services/spotifyFetch';
+import React, { useState, useEffect, FormEvent } from "react";
+import { Button } from "@/ui/button";
+import {
+  handleSpotifyAuthCallback,
+  redirectToAuthCodeFlow,
+} from "@/services/spotifyFetch";
+import { addCreator } from "@/firebase/addCreator";
+import { Creator, SpotifyProfile } from "../lib/interfaces";
+import { useWallet } from "@/app/contexts/WalletContext";
 
-function CreatorSignup() {
-  // Handler for Spotify authentication
-  const handleSpotifyAuth = () => {
-    redirectToAuthCodeFlow(process.env.REACT_APP_SPOTIFY_CLIENT_ID as string);
-  };
+const spotifyClientId = process.env.NEXT_PUBLIC_SPOTIFY_CLIENT_ID;
 
-  // Handler for MetaMask linking
-  const handleMetamaskLink = async () => {
-    // Ensure TypeScript knows about `window.ethereum`
-    if (window.ethereum) {
-      try {
-        // Request account access if needed
-        const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-        // Accounts now exposed, can use the public address to sign in
-        console.log('Connected account:', accounts[0]);
-        // Proceed with any further logic, e.g., redirecting to the dashboard or storing the account
-      } catch (error) {
-        console.error('Error connecting to MetaMask:', error);
-      }
-    } else {
-      console.log('MetaMask is not installed!');
+export function CreatorSignup() {
+  // State to track Spotify connection
+  const [isSpotifyConnected, setIsSpotifyConnected] = useState(false);
+
+  const [spotifyButtonText, setSpotifyButtonText] = useState("Link Spotify");
+  const [spotifyProfile, setSpotifyProfile] = useState<SpotifyProfile | null>(
+    null
+  );
+  const { walletButtonText, isWalletConnected, handleWalletLink } = useWallet();
+
+  useEffect(() => {
+    const code = new URLSearchParams(window.location.search).get("code");
+    if (code && !isSpotifyConnected && !spotifyProfile) {
+      (async () => {
+        const profile: SpotifyProfile | null = await handleSpotifyAuthCallback(
+          spotifyClientId!
+        );
+        console.log("Spotify profile fetched:", profile);
+
+        if (profile && profile.spotifyId) {
+          console.log("Spotify profile fetched:", profile);
+          setSpotifyProfile(profile);
+          setIsSpotifyConnected(true);
+          setSpotifyButtonText("Spotify Connected");
+
+          // Clear the code from the URL
+          const newUrl = window.location.pathname;
+          window.history.pushState({}, "", newUrl);
+        }
+        if (isSpotifyConnected && profile && isWalletConnected) {
+          console.log("I have penetrated");
+          console.log(profile);
+          addCreator({
+            spotifyId: profile.spotifyId,
+            name: profile.displayName,
+            start_date: null,
+            followers: null,
+            web3_wallet: walletButtonText,
+            bond: null,
+            image: profile.image,
+          });
+        }
+      })();
     }
+  }, [isSpotifyConnected, spotifyProfile]);
+
+  const handleSpotifyAuth = () => {
+    redirectToAuthCodeFlow(spotifyClientId!);
   };
 
-  // Form submission handler
-  const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const onSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault(); // Prevent form from submitting
-    console.log('Form submission logic placeholder.');
+    console.log("Form submission logic placeholder.");
   };
 
   return (
-    <div className="space-y-8">
-      <p>Please connect to both Spotify and MetaMask to proceed to your dashboard.</p>
-      <form onSubmit={onSubmit}>
-        <Button type="button" onClick={handleSpotifyAuth}>Connect with Spotify</Button>
-        <Button type="button" onClick={handleMetamaskLink}>Link Metamask</Button>
-        {/* Placeholder for future form elements or actions */}
+    <div className="space-y-8 flex justify-center items-center flex-col">
+      <p>Connect to Spotify and your wallet to get started.</p>
+      <form
+        onSubmit={onSubmit}
+        className="flex flex-col items-center space-y-4"
+      >
+        <Button type="button" onClick={handleSpotifyAuth}>
+          {spotifyButtonText}
+        </Button>
       </form>
     </div>
   );
 }
-
-export default CreatorSignup;
