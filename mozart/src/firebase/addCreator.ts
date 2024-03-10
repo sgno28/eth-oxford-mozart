@@ -8,18 +8,24 @@ const addCreator = async ({
   spotifyId,
   name,
   start_date,
-  monthly_listeners,
   followers,
   web3_wallet,
   bond,
   image,
 }: Creator) => {
-  await setDoc(doc(db, "creators"), {
+  if (!spotifyId) {
+    throw new Error("Spotify ID is required to add a creator.");
+  }
+  
+  // Specify the document ID explicitly by using the spotifyId
+  const docRef = doc(db, "creators", spotifyId);
+  await setDoc(docRef, {
     name,
     image,
-    spotifyId,
+    spotifyId, // This might be redundant since spotifyId is used as the doc ID
     web3_wallet,
-  });
+    // Include other fields as necessary
+  }, { merge: true }); // Using { merge: true } to update existing documents instead of overwriting
 };
 
 export { app, addCreator };
