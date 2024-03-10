@@ -1,12 +1,17 @@
 "use client";
+import { FunctionComponent, useEffect, useState } from 'react';
 import { Button } from "@/ui/button";
 import { Separator } from "@/ui/separator";
 import { useMode } from "@/app/contexts/ModeContext";
 import { useRouter } from "next/navigation";
 import { RatIcon, BusIcon, BabyIcon, PlusIcon, CandlestickChart } from "lucide-react";
-import { LucideIcon } from "lucide-react/dist/lucide-react"
-import { FunctionComponent } from "react";
+import { LucideIcon } from "lucide-react/dist/lucide-react";
 import { useWallet } from "@/app/contexts/WalletContext";
+import { getFirestore, collection, query, where, getDocs } from "firebase/firestore";
+import { app } from "../firebase/firebaseConfig";
+import { ethers } from "ethers";
+
+const db = getFirestore(app);
 
 type SidebarItem = {
   name: string;
@@ -17,6 +22,36 @@ type SidebarItem = {
 export function Sidebar() {
   const { mode, setMode } = useMode();
   const router = useRouter();
+  const wallet = useWallet(); // Assuming useWallet() returns the wallet object with an address
+  const [hasBond, setHasBond] = useState(false);
+
+
+
+  useEffect(() => {
+    const checkForBond = async () => {
+      const provider = new ethers.providers.Web3Provider((window as any).ethereum);
+      await provider.send("eth_requestAccounts", []);
+      const signer = provider.getSigner();
+
+      const address = await signer.getAddress();
+
+      if (address) {
+        const creatorsRef = collection(db, "creators");
+        const q = query(creatorsRef, where("web3_wallet", "==", address));
+        const querySnapshot = await getDocs(q);
+        querySnapshot.forEach((doc) => {
+          if (doc.data().bond) {
+            setHasBond(true);
+          }
+        });
+      }
+
+      return address;
+    };
+
+    checkForBond();
+    console.log("Has bond:", hasBond);
+  }, [wallet]);
 
   const fan_routes: SidebarItem[] = [
     { name: "Discover", route: "/fan/discover", icon: RatIcon },
@@ -24,10 +59,12 @@ export function Sidebar() {
     { name: "Mother", route: "/creator/my-bond", icon: BabyIcon },
   ];
 
-  const creator_routes: SidebarItem[] = [
-    { name: "Add bond", route: "/creator/add-bond", icon: PlusIcon },
-    { name: "Bond Dashboard", route: "/creator/my-bond", icon: CandlestickChart },
-  ];
+  const creator_routes: SidebarItem[] = hasBond
+    ? [{ name: "Bond Dashboard", route: "/creator/my-bond", icon: CandlestickChart }]
+    : [
+        { name: "Add bond", route: "/creator/add-bond", icon: PlusIcon },
+        { name: "Bond Dashboard", route: "/creator/my-bond", icon: CandlestickChart },
+      ];
 
   const toggleMode = () => {
     const newMode = mode === "Fan" ? "Creator" : "Fan";
