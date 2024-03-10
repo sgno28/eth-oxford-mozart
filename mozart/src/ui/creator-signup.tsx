@@ -5,33 +5,23 @@ import {
   redirectToAuthCodeFlow,
 } from "@/services/spotifyFetch";
 import { addCreator } from "@/firebase/addCreator";
-import { Creator, SpotifyProfile } from "../lib/interfaces";
+import { SpotifyProfile } from "../lib/interfaces"; // Adjust the import path as necessary
 import { useWallet } from "@/app/contexts/WalletContext";
 
 const spotifyClientId = process.env.NEXT_PUBLIC_SPOTIFY_CLIENT_ID;
 
 export function CreatorSignup() {
-  // State to track Spotify connection
   const [isSpotifyConnected, setIsSpotifyConnected] = useState(false);
-
   const [spotifyButtonText, setSpotifyButtonText] = useState("Link Spotify");
-  const [spotifyProfile, setSpotifyProfile] = useState<SpotifyProfile | null>(
-    null
-  );
-  const { isWalletConnected, walletAddress, walletButtonText } = useWallet();
+  const [spotifyProfile, setSpotifyProfile] = useState<SpotifyProfile | null>(null);
+  const { isWalletConnected, walletAddress } = useWallet(); // Assuming 'walletButtonText' is unused and removed
 
   useEffect(() => {
-    const code = new URLSearchParams(window.location.search).get("code");
-    console.log("wallet initial", isWalletConnected);
-    if (code && !isSpotifyConnected && !spotifyProfile) {
-      (async () => {
-        const profile: SpotifyProfile | null = await handleSpotifyAuthCallback(
-          spotifyClientId!
-        );
-        console.log("Spotify profile fetched:", profile);
-
+    const checkSpotifyAuth = async () => {
+      const code = new URLSearchParams(window.location.search).get("code");
+      if (code && !isSpotifyConnected && !spotifyProfile) {
+        const profile = await handleSpotifyAuthCallback(spotifyClientId!);
         if (profile && profile.spotifyId && isWalletConnected) {
-          console.log("Spotify profile fetched:", profile);
           setSpotifyProfile(profile);
           setIsSpotifyConnected(true);
           setSpotifyButtonText("Spotify Connected");
@@ -46,26 +36,30 @@ export function CreatorSignup() {
             ticketCollections: [],
             merchandise: [],
           });
-          // Clear the code from the URL
+          // Optionally, clear the code from the URL to clean up after auth
           const newUrl = window.location.pathname;
           window.history.pushState({}, "", newUrl);
         }
-        console.log(isSpotifyConnected, profile, isWalletConnected);
-      })();
-    }
-  }, [isSpotifyConnected, spotifyProfile]);
+      }
+    };
+
+    checkSpotifyAuth();
+  }, [isSpotifyConnected, spotifyProfile, isWalletConnected, spotifyClientId, walletAddress]);
 
   const handleSpotifyAuth = () => {
-    redirectToAuthCodeFlow(spotifyClientId!);
+    if (!isSpotifyConnected) {
+      redirectToAuthCodeFlow(spotifyClientId!);
+    }
   };
 
-  const SpotifyButton = () => {
-    return (
-      <Button
-        type="button"
-        onClick={handleSpotifyAuth}
-        className="bg-green-500 hover:bg-green-600 text-white flex items-center justify-center p-2 rounded"
-      >
+  // This component is updated to reflect the connection status dynamically
+  const SpotifyButton = () => (
+    <Button
+      type="button"
+      onClick={handleSpotifyAuth}
+      className={`bg-green-500 hover:bg-green-600 text-white flex items-center justify-center p-2 rounded ${isSpotifyConnected ? 'cursor-default' : ''}`}
+      disabled={isSpotifyConnected} // Disables the button if already connected
+    >
         <svg
           className="w-6 h-6 mr-2"
           width="24"
@@ -82,7 +76,6 @@ export function CreatorSignup() {
         {spotifyButtonText}
       </Button>
     );
-  };
 
   const SoundCloudButton = () => {
     // Add any click handler or state you need for SoundCloud authentication
@@ -187,15 +180,10 @@ export function CreatorSignup() {
   return (
     <div className="space-y-8 flex justify-center items-center flex-col">
       <p>Connect to Spotify and your wallet to get started.</p>
-      <form
-        onSubmit={onSubmit}
-        className="flex flex-col items-center space-y-4"
-      >
-        <div className="flex">
-          <SpotifyButton />
-          <SoundCloudButton />
-        </div>
-      </form>
+      <div className="flex">
+        <SpotifyButton />
+        <SoundCloudButton />
+      </div>
     </div>
   );
 }
