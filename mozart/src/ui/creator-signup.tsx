@@ -18,8 +18,7 @@ export function CreatorSignup() {
   const [spotifyProfile, setSpotifyProfile] = useState<SpotifyProfile | null>(
     null
   );
-  const isWalletConnected = localStorage.getItem("isWalletConnected");
-  const walletButtonText = localStorage.getItem("walletButtonText");
+  const { isWalletConnected, walletAddress, walletButtonText } = useWallet();
 
   useEffect(() => {
     const code = new URLSearchParams(window.location.search).get("code");
@@ -41,7 +40,7 @@ export function CreatorSignup() {
             name: profile.displayName,
             start_date: null,
             followers: null,
-            web3_wallet: walletButtonText,
+            web3_wallet: walletAddress,
             bond: null,
             image: profile.image || null,
             ticketCollections: [],

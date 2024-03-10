@@ -13,6 +13,7 @@ interface WalletContextType {
   walletAddress: string;
   walletButtonText: string;
   handleWalletLink: () => Promise<void>;
+  handleWalletDisconnect: () => void;
 }
 
 const defaultContextValue: WalletContextType = {
@@ -20,6 +21,7 @@ const defaultContextValue: WalletContextType = {
   walletAddress: "",
   walletButtonText: "Link Wallet",
   handleWalletLink: async () => {},
+  handleWalletDisconnect: () => {},
 };
 
 const WalletContext = createContext<WalletContextType>(defaultContextValue);
@@ -33,9 +35,9 @@ interface WalletProviderProps {
 export const WalletProvider: FunctionComponent<WalletProviderProps> = ({
   children,
 }) => {
-  // Initialize state from localStorage, or use defaults
+  // Initialize state with values from localStorage if available
   const [isWalletConnected, setIsWalletConnected] = useState<boolean>(
-    localStorage.getItem("isWalletConnected") === "true"
+    JSON.parse(localStorage.getItem("isWalletConnected") || "false")
   );
   const [walletAddress, setWalletAddress] = useState<string>(
     localStorage.getItem("walletAddress") || ""
@@ -45,14 +47,14 @@ export const WalletProvider: FunctionComponent<WalletProviderProps> = ({
   );
 
   useEffect(() => {
-    // Persist state changes to localStorage
+    // Update localStorage whenever state changes
     localStorage.setItem(
       "isWalletConnected",
       JSON.stringify(isWalletConnected)
     );
     localStorage.setItem("walletAddress", walletAddress);
     localStorage.setItem("walletButtonText", walletButtonText);
-  }, [isWalletConnected, walletAddress, walletButtonText]); // Only re-run the effect if these values change
+  }, [isWalletConnected, walletAddress, walletButtonText]);
 
   const handleWalletLink = async () => {
     if (window.ethereum) {
@@ -60,20 +62,25 @@ export const WalletProvider: FunctionComponent<WalletProviderProps> = ({
         const accounts = await window.ethereum.request({
           method: "eth_requestAccounts",
         });
-        setWalletAddress(accounts[0]);
+        const newWalletAddress = accounts[0];
+        setWalletAddress(newWalletAddress);
         setIsWalletConnected(true);
-        setWalletButtonText(accounts[0]); // You might want to change this to a more descriptive text
-        console.log(
-          "Connected wallet account:",
-          accounts[0],
-          isWalletConnected
-        );
+        setWalletButtonText(newWalletAddress); // Adjust this as needed
       } catch (error) {
         console.error("Error connecting to wallet:", error);
       }
     } else {
       console.log("Install a wallet to get started!");
     }
+  };
+
+  const handleWalletDisconnect = () => {
+    setIsWalletConnected(false);
+    setWalletAddress("");
+    setWalletButtonText("Link Wallet");
+    localStorage.removeItem("isWalletConnected");
+    localStorage.removeItem("walletAddress");
+    localStorage.removeItem("walletButtonText");
   };
 
   return (
@@ -83,6 +90,7 @@ export const WalletProvider: FunctionComponent<WalletProviderProps> = ({
         walletAddress,
         walletButtonText,
         handleWalletLink,
+        handleWalletDisconnect,
       }}
     >
       {children}

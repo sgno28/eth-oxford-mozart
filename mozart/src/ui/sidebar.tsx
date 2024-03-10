@@ -196,24 +196,34 @@ export function Sidebar() {
 }
 
 const ConnectWalletButton: FunctionComponent = () => {
-  const { walletButtonText, isWalletConnected, handleWalletLink } = useWallet();
+  const {
+    walletButtonText,
+    isWalletConnected,
+    walletAddress,
+    handleWalletLink,
+    handleWalletDisconnect, // Ensure this is destructured from useWallet()
+  } = useWallet();
+
+  const handleClick = () => {
+    if (isWalletConnected) {
+      handleWalletDisconnect();
+    } else {
+      handleWalletLink();
+    }
+  };
 
   function formatWalletAddress(address: string) {
     if (!address || address.length < 8) return address;
     const start = address.substring(0, 5);
-    const end = address.substring(address.length - 10);
+    const end = address.substring(address.length - 4); // Changed from -10 for consistency
     return `${start}...${end}`;
   }
 
   return (
-    <Button
-      type="button"
-      onClick={handleWalletLink}
-      disabled={isWalletConnected}
-    >
+    <Button type="button" onClick={handleClick}>
       <p className="text-xs">
         {isWalletConnected
-          ? formatWalletAddress(walletButtonText)
+          ? `Disconnect (${formatWalletAddress(walletAddress)})` // Use walletAddress from useWallet()
           : walletButtonText}
       </p>
     </Button>

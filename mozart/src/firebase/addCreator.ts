@@ -19,6 +19,7 @@ const addCreator = async ({
 
   // Specify the document ID explicitly by using the spotifyId
   const docRef = doc(db, "creators", spotifyId);
+  console.log("adding creator:", name, web3_wallet);
   await setDoc(
     docRef,
     {
