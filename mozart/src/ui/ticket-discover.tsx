@@ -68,7 +68,7 @@ function TrendingTickets({ ticket }: { ticket: TicketCollection }) {
                 />
                 <CardTitle className="text-center mt-4">{ticket.artistName || "Unknown Artist"}</CardTitle> {/* Use artistName if available */}
                 <CardContent className="text-center mt-1">
-                <p>Price: {ticket.ticketPrice}</p>
+                <p>Price: {ticket.ticketPrice} XTZ</p>
                 </CardContent>
             </Card>
        </Link>
