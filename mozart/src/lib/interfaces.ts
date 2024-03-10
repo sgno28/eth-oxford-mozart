@@ -43,6 +43,7 @@ export interface TicketCollection {
   address: string;
   commonIpfsUrl: string;
   ticketPrice: string;
+  artistName: string;
 }
 
 export interface MerchItem {
