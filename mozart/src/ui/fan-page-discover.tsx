@@ -54,12 +54,12 @@ export default function FanPageDiscover({ Creators }: { Creators: Creator[] }) {
         <p className="text-sm text-muted-foreground">
           Trending Creators we'd think you'd like!
         </p>
-        <div className="flex w-full space-x-4 p-">
+        <div className="flex w-full space-x-4 ">
           {creators.map((creator, index) => (
             <TrendingCreators key={index} creator={creator} />
           ))}
         </div>
-        <h2 className="text-2xl font-semibold tracking-tight pt-3">
+        <h2 className="text-2xl font-semibold tracking-tight ">
           Top Creators
         </h2>
         <p className="text-sm text-muted-foreground">
@@ -84,7 +84,7 @@ function TrendingCreators({ creator }: { creator: Creator }) {
   }
   return (
     <Link href={`/fan/bond/${creator.bond?.contract_address}`}>
-    <Card className="flex flex-col items-center flex-shrink-0 p-4">
+    <Card className="flex flex-col items-center flex-shrink-0 p-4 mt-3 mb-3">
       <img
         src={creator.image || "https://via.placeholder.com/150"}
         alt={creator.name!}
