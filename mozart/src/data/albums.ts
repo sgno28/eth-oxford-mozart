@@ -1,9 +1,6 @@
-export interface Album {
+export interface Creator {
   name: string;
-  artist: string;
-  cover: string;
+  image: string;
 }
 
-export const listenNowAlbums: Album[] = [];
-
-export const madeForYouAlbums: Album[] = [];
+export const trendingCreators: Creator[] = [];
