@@ -26,6 +26,7 @@ export default function TicketDiscover() {
               address: tc.address || null,
               commonIpfsUrl: tc.commonIpfsUrl,
               ticketPrice: tc.ticketPrice,
+              artistName: data.name,
             })));
           }
         });
@@ -57,14 +58,14 @@ function TrendingTickets({ ticket }: { ticket: TicketCollection }) {
     const imageStyle = "w-24 h-24 object-cover rounded-full mx-auto"; // Width and height set to 24, adjust as needed
 
     return (
-      <Card className="flex flex-col items-center p-4 max-w-xs w-full"> {/* Ensure cards have a max width */}
+      <Card className="flex flex-col items-center p-4 max-w-xs w-full mt-2"> {/* Ensure cards have a max width */}
         <img 
           src={ticket.commonIpfsUrl || "https://via.placeholder.com/150"} 
           alt="Ticket Image" 
           className={imageStyle} // Apply the consistent image dimensions
         />
-        <CardTitle className="text-center">{ticket.artistName || "Unknown Artist"}</CardTitle> {/* Use artistName if available */}
-        <CardContent className="text-center">
+        <CardTitle className="text-center mt-4">{ticket.artistName || "Unknown Artist"}</CardTitle> {/* Use artistName if available */}
+        <CardContent className="text-center mt-1">
           <p>Price: {ticket.ticketPrice}</p>
         </CardContent>
       </Card>

@@ -65,7 +65,7 @@ export default function FanPageDiscover({ Creators }: { Creators: Creator[] }) {
         <p className="text-sm text-muted-foreground">
           The Top 3 Creators on the platform
         </p>
-        <div className="flex flex-row justify-between items-center w-full p-4 overflow-x-auto">
+        <div className="flex flex-row justify-between items-center w-full mt-2 overflow-x-auto">
           {creators.slice(0, 3).map((creator, index) => (
             <TopCreators key={index} creator={creator} />
           ))}
@@ -127,7 +127,7 @@ function TopCreators({ creator }: { creator: Creator }) {
               className="w-25 h-25 object-cover rounded-full"
             />
             <div className="flex flex-col justify-center">
-              <CardTitle className="text-center">{creator.name}</CardTitle>
+              <CardTitle className="text-center mt-6">{creator.name}</CardTitle>
               <CardContent className="text-center pt-3">
                 <p>{creator.bond?.principal_fee} XTZ</p>
                 <p>{(creator.bond?.revenue_share || 0) * 100}%</p>

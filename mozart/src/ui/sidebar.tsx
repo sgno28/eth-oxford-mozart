@@ -186,7 +186,7 @@ export function Sidebar() {
                   <Button
                     key={route.route}
                     variant="secondary"
-                    className="w-full justify-start mb-1"
+                    className="w-full justify-start"
                     onClick={() => router.push(route.route)}
                   >
                     <route.icon className="mr-2" />
@@ -197,7 +197,7 @@ export function Sidebar() {
                   <Button
                     key={route.name}
                     variant="secondary"
-                    className="w-full justify-start mb-1"
+                    className="w-full justify-start"
                     onClick={() => router.push(route.route)}
                   >
                     <route.icon className="mr-2" />
