@@ -16,6 +16,8 @@ export default function MyCreators() {
   );
 }
 
+function BondCard() {}
+
 const dummy_bond_purchased: Bond = {
   contract_address: "0x1",
   creator: "0x2",
