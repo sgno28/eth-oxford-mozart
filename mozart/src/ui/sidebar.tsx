@@ -118,26 +118,14 @@ export function Sidebar() {
     <div className="flex flex-col h-screen">
       <div className="flex-1 overflow-auto py-4 space-y-4">
         <div className="py-2">
-          <div className="px-3 ">
-            <div className="px-4 ">
-              <div
-                className="cursor-pointer"
-                onClick={() => {
-                  const targetPath =
-                    mode === "Fan" ? "/fan/my-creators" : "/creator/my-bond";
-                  router.push(targetPath);
-                }}
-              >
-                <h2 className="text-lg font-semibold tracking-tight">
-                  My {mode === "Fan" ? "Creators" : "Fans"}
-                </h2>
-                <p className="italic">{mode} View</p>
-              </div>
-
-              <div className="pt-8">
-                <ConnectWalletButton></ConnectWalletButton>
-              </div>
+          <div className="flex px-3 items-center">
+            <div className="flex-grow">
+              <h2 className="text-lg font-semibold tracking-tight">
+                My {mode === "Fan" ? "Creators" : "Fans"}
+              </h2>
+              <p className="italic">{mode} View</p>
             </div>
+            <ConnectWalletButton />
           </div>
 
           <Separator className="horizontal my-2"></Separator>
@@ -210,8 +198,9 @@ const ConnectWalletButton: FunctionComponent = () => {
       type="button"
       onClick={handleWalletLink}
       disabled={isWalletConnected}
+      className="w-auto"
     >
-      <p className="text-xs">
+      <p className="text-xs justify-center">
         {isWalletConnected
           ? formatWalletAddress(walletButtonText)
           : walletButtonText}
