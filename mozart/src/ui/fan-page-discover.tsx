@@ -6,6 +6,7 @@ import { app } from "@/firebase/firebaseConfig";
 import { Creator } from "@/lib/interfaces";
 import { Card, CardTitle, CardContent } from "@/ui/card";
 import { Progress } from "@/ui/progress";
+import Link from "next/link";
 
 const db = getFirestore(app);
 
@@ -81,6 +82,7 @@ function TrendingCreators({ creator }: { creator: Creator }) {
       .join(" "); // Join the parts back together
   }
   return (
+    <Link href={`/fan/bond/${creator.bond?.contract_address}`}>
     <Card className="flex flex-col items-center flex-shrink-0 p-4">
       <img
         src={creator.image || "https://via.placeholder.com/150"}
@@ -102,6 +104,7 @@ function TrendingCreators({ creator }: { creator: Creator }) {
         </div>
       </CardContent>
     </Card>
+    </Link>
   );
 }
 
@@ -144,5 +147,6 @@ function TopCreators({ creator }: { creator: Creator }) {
         />
       </Card>
     </div>
+    </Link>
   );
 }

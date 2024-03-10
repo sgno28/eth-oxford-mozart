@@ -1,4 +1,5 @@
 "use client";
+
 import React, { useEffect, useState } from "react";
 import { ethers } from "ethers";
 import { usePathname } from "next/navigation";
@@ -10,6 +11,7 @@ import { Progress } from "@/ui/progress";
 import { getBondByContractAddress } from "@/firebase/firebase-helpers";
 import { Bond } from "@/lib/interfaces";
 import { revenueShareContract } from "@/contracts/revenueShare";
+import Link from "next/link";
 
 const contractABI = revenueShareContract.abi;
 
@@ -20,12 +22,12 @@ export default function BondPage() {
   const [bond, setBond] = useState<Bond | null>(null);
   const [purchaseAmount, setPurchaseAmount] = useState(1);
   const [progress, setProgress] = useState(0);
+  const [buttonLoading, setButtonLoading] = useState(false);
 
   useEffect(() => {
     const fetchBond = async () => {
       const bondData: Bond = await getBondByContractAddress(bondAddress);
       setBond(bondData);
-      // Placeholder for fetching total supply and calculating progress
       const provider = new ethers.providers.Web3Provider((window as any).ethereum);
       const contract = new ethers.Contract(bondAddress, contractABI, provider);
       const totalSupply = await contract.totalSupply();
@@ -38,39 +40,39 @@ export default function BondPage() {
 
   const handlePurchase = async () => {
     if (bond && purchaseAmount > 0) {
-        try {
-            const provider = new ethers.providers.Web3Provider((window as any).ethereum);
-            await provider.send("eth_requestAccounts", []);
-            const signer = provider.getSigner();
-            const contract = new ethers.Contract(bond.contract_address, contractABI, signer);
+      try {
+        const provider = new ethers.providers.Web3Provider((window as any).ethereum);
+        await provider.send("eth_requestAccounts", []);
+        const signer = provider.getSigner();
+        const contract = new ethers.Contract(bond.contract_address, contractABI, signer);
 
-            console.log("Purchasing", purchaseAmount, "bond tokens for price", bond.principal_fee * purchaseAmount, "ETH");
-            console.log("Contract:", contract.address);
-            console.log("Provider:", await signer.getAddress());
-            const balance = await provider.getBalance(await signer.getAddress());
-            console.log("Balance:", ethers.utils.formatEther(balance));
+        console.log("Purchasing", purchaseAmount, "bond tokens for price", bond.principal_fee * purchaseAmount, "ETH");
+        console.log("Contract:", contract.address);
+        console.log("Provider:", await signer.getAddress());
+        const balance = await provider.getBalance(await signer.getAddress());
+        console.log("Balance:", ethers.utils.formatEther(balance));
 
-            await contract.buyBondTokens(purchaseAmount, {
-                value: ethers.utils.parseEther((bond.principal_fee * purchaseAmount).toString())
-            });
-            // Handle post-purchase logic here (e.g., update UI, show success message)
-        } catch (error) {
-            console.error("Purchase failed:", error);
-        }
+        await contract.buyBondTokens(purchaseAmount, {
+            value: ethers.utils.parseEther((bond.principal_fee * purchaseAmount).toString())
+        });
+        // Handle post-purchase logic here (e.g., update UI, show success message)
+    } catch (error) {
+        console.error("Purchase failed:", error);
+    }
     }
   };
 
   return (
     <div className="flex flex-col items-center justify-center space-y-4">
       {bond && (
-        <Card>
+        <Card className="w-full md:w-3/4">
           <CardHeader>
-            <CardTitle>{bond.contract_address}</CardTitle>
+            <CardTitle className="text-lg md:text-xl text-center">{bond.contract_address}</CardTitle>
           </CardHeader>
           <CardContent>
-            <CardDescription>Price: {bond.principal_fee} ETH</CardDescription>
-            <CardDescription>Supply Cap: {bond.supplyCap}</CardDescription>
-            <CardDescription>Revenue Share: {bond.revenue_share}%</CardDescription>
+            <CardDescription className="text-center">Price: {bond.principal_fee} ETH</CardDescription>
+            <CardDescription className="text-center">Supply Cap: {bond.supplyCap}</CardDescription>
+            <CardDescription className="text-center">Revenue Share: {bond.revenue_share}%</CardDescription>
             <Progress value={progress} max={100} />
           </CardContent>
         </Card>
@@ -79,7 +81,12 @@ export default function BondPage() {
         Amount to Purchase:
         <Input className="mt-2" type="number" value={purchaseAmount} onChange={(e) => setPurchaseAmount(Number(e.target.value))} min="1" />
       </Label>
-      <Button onClick={handlePurchase}>Buy</Button>
+      <Button onClick={handlePurchase} className={`transition duration-300 ease-in-out ${buttonLoading ? 'opacity-50 cursor-not-allowed' : 'hover:bg-black bg-black text-white'}`}>
+        {buttonLoading ? 'Processing...' : 'Buy'}
+      </Button>
+      <Link href="/">
+        <span className="text-blue-500 cursor-pointer hover:underline">Back to Home</span>
+      </Link>
     </div>
   );
 }
