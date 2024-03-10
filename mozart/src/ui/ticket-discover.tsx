@@ -26,6 +26,7 @@ export default function TicketDiscover() {
               address: tc.address || null,
               commonIpfsUrl: tc.commonIpfsUrl,
               ticketPrice: tc.ticketPrice,
+              artistName: data.name
             })));
           }
         });
