@@ -10,6 +10,7 @@ import {
   PlusIcon,
   CandlestickChart,
   TicketCheckIcon,
+  Shirt,
 } from "lucide-react";
 import { LucideIcon } from "lucide-react/dist/lucide-react";
 import { useWallet } from "@/app/contexts/WalletContext";
@@ -100,6 +101,7 @@ export function Sidebar() {
       route: "/fan/ticket-marketplace",
       icon: TicketIcon,
     },
+    {name: "Merch Marketplace", route: "/fan/merch-marketplace", icon: Shirt}
   ];
 
   const creator_routes: SidebarItem[] = hasBond && hasMerchStore

@@ -45,6 +45,7 @@ export function CreatorSignup() {
             bond: null,
             image: profile.image || null,
             ticketCollections: [],
+            merchandise: [],
           });
           // Clear the code from the URL
           const newUrl = window.location.pathname;

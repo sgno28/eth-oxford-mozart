@@ -3,14 +3,14 @@
 import React, { useEffect, useState } from "react";
 import { getFirestore, collection, getDocs } from "firebase/firestore";
 import { app } from "@/firebase/firebaseConfig";
-import TicketDiscover from "@/ui/ticket-discover";
+import MerchDiscover from "@/ui/merch-discover";
 
 const db = getFirestore(app);
 
 export default function Fan() {
   return (
     <div>
-      <TicketDiscover />
+      <MerchDiscover />
     </div>
   );
 }
