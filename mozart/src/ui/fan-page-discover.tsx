@@ -54,12 +54,12 @@ export default function FanPageDiscover({ Creators }: { Creators: Creator[] }) {
         <p className="text-sm text-muted-foreground">
           Trending Creators we'd think you'd like!
         </p>
-        <div className="flex w-full space-x-4 p-">
+        <div className="flex w-full space-x-4 pb-5">
           {creators.map((creator, index) => (
             <TrendingCreators key={index} creator={creator} />
           ))}
         </div>
-        <h2 className="text-2xl font-semibold tracking-tight pt-3">
+        <h2 className="text-2xl font-semibold tracking-tight pt-10">
           Top Creators
         </h2>
         <p className="text-sm text-muted-foreground">
@@ -84,27 +84,27 @@ function TrendingCreators({ creator }: { creator: Creator }) {
   }
   return (
     <Link href={`/fan/bond/${creator.bond?.contract_address}`}>
-    <Card className="flex flex-col items-center flex-shrink-0 p-4">
-      <img
-        src={creator.image || "https://via.placeholder.com/150"}
-        alt={creator.name!}
-        className="w-25 h-25 object-cover rounded-full mx-auto my-3" // Increased size, added margin, and centered
-      />
-      <CardTitle className="text-center">
-        {capitalizeName(creator.name!)}
-      </CardTitle>
-      <CardContent className="flex items-center justify-center space-x-4 pt-3">
-        <div>
-          <p>{creator.bond?.principal_fee} XTZ</p>
-        </div>
-        <div>
-          <p>{(creator.bond?.revenue_share || 0) * 100}%</p>
-        </div>
-        <div>
-          <p>{creator.bond?.coupon_interval} Months</p>
-        </div>
-      </CardContent>
-    </Card>
+      <Card className="flex flex-col items-center flex-shrink-0 p-4 mt-3 mb-3">
+        <img
+          src={creator.image || "https://via.placeholder.com/150"}
+          alt={creator.name!}
+          className="w-25 h-25 object-cover rounded-full mx-auto my-3" // Increased size, added margin, and centered
+        />
+        <CardTitle className="text-center">
+          {capitalizeName(creator.name!)}
+        </CardTitle>
+        <CardContent className="flex items-center justify-center space-x-4 pt-3">
+          <div>
+            <p>{creator.bond?.principal_fee} XTZ</p>
+          </div>
+          <div>
+            <p>{(creator.bond?.revenue_share || 0) * 100}%</p>
+          </div>
+          <div>
+            <p>{creator.bond?.coupon_interval} Months</p>
+          </div>
+        </CardContent>
+      </Card>
     </Link>
   );
 }
@@ -117,10 +117,15 @@ function TopCreators({ creator }: { creator: Creator }) {
       .join(" "); // Join the parts back together
   }
   return (
-    
     <Link href={`/fan/bond/${creator.bond?.contract_address}`}>
-      <div className="flex-none" style={{ minWidth: "350px", marginRight: "20px" }}>
-        <Card className="flex flex-col justify-between items-center flex-shrink-0 p-10 gap-4" style={{ minHeight: "300px" }}>
+      <div
+        className="flex-none"
+        style={{ minWidth: "350px", marginRight: "20px" }}
+      >
+        <Card
+          className="flex flex-col justify-between items-center flex-shrink-0 p-10 gap-4"
+          style={{ minHeight: "300px" }}
+        >
           <div className="flex flex-row justify-between items-center w-full">
             <img
               src={creator.image || "https://via.placeholder.com/150"}
@@ -135,10 +140,12 @@ function TopCreators({ creator }: { creator: Creator }) {
               </CardContent>
             </div>
           </div>
-          <Progress value={Math.floor(Math.random() * 100) + 1} className="w-full" />
+          <Progress
+            value={Math.floor(Math.random() * 100) + 1}
+            className="w-full"
+          />
         </Card>
-      
-    </div>
+      </div>
     </Link>
   );
 }

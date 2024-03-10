@@ -173,7 +173,7 @@ export function Sidebar() {
                 <p className="italic">{mode} View</p>
               </div>
 
-              <div className="pt-8 ml-4">
+              <div className="pt-8 w-full">
                 <ConnectWalletButton></ConnectWalletButton>
               </div>
             </div>
