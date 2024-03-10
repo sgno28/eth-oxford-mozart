@@ -5,6 +5,8 @@ import { useMode } from "@/app/contexts/ModeContext";
 import { useRouter } from "next/navigation";
 import { RatIcon, BusIcon, BabyIcon, PlusIcon, CandlestickChart } from "lucide-react";
 import { LucideIcon } from "lucide-react/dist/lucide-react"
+import { FunctionComponent } from "react";
+import { useWallet } from "@/app/contexts/WalletContext";
 
 type SidebarItem = {
   name: string;
@@ -116,3 +118,27 @@ export function Sidebar() {
   );
 }
 
+const ConnectWalletButton: FunctionComponent = () => {
+  const { walletButtonText, isWalletConnected, handleWalletLink } = useWallet();
+
+  function formatWalletAddress(address: string) {
+    if (!address || address.length < 8) return address;
+    const start = address.substring(0, 5);
+    const end = address.substring(address.length - 10);
+    return `${start}...${end}`;
+  }
+
+  return (
+    <Button
+      type="button"
+      onClick={handleWalletLink}
+      disabled={isWalletConnected}
+    >
+      <p className="text-xs">
+        {isWalletConnected
+          ? formatWalletAddress(walletButtonText)
+          : walletButtonText}
+      </p>
+    </Button>
+  );
+};
