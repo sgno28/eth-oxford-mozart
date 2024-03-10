@@ -7,6 +7,12 @@ export interface Creator {
   bond: Bond | null;
   image: string | null;
   ticketCollections: TicketCollection[];
+  merchandise: Merchandise;
+}
+
+export interface Merchandise {
+  contract_address: string;
+  merchItems: MerchItem[];
 }
 
 export interface SpotifyProfile {
@@ -37,4 +43,12 @@ export interface TicketCollection {
   address: string;
   commonIpfsUrl: string;
   ticketPrice: string;
+}
+
+export interface MerchItem {
+  name: string;
+  price: string; 
+  supplyCap: number; 
+  sold?: number;
+  isActive?: boolean;
 }
