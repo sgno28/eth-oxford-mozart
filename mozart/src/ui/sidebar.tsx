@@ -152,26 +152,26 @@ export function Sidebar() {
   };
 
   return (
-    <div className="flex flex-col h-screen">
+    <div className="flex flex-col h-screen w-1/5">
       <div className="flex-1 overflow-auto py-4 space-y-4">
         <div className="py-2">
           <div className="px-3 ">
             <div className="px-4 ">
               <div
-                className="cursor-pointer"
+                className="cursor-pointer text-white"
                 onClick={() => {
                   const targetPath =
                     mode === "Fan" ? "/fan/my-creators" : "/creator/my-bond";
                   router.push(targetPath);
                 }}
               >
-                <h2 className="text-lg font-semibold tracking-tight">
+                <h2 className="text-lg text-white font-semibold tracking-tight">
                   My {mode === "Fan" ? "Creators" : "Fans"}
                 </h2>
                 <p className="italic">{mode} View</p>
               </div>
 
-              <div className="pt-8">
+              <div className="pt-8 justify-center">
                 <ConnectWalletButton></ConnectWalletButton>
               </div>
             </div>
@@ -184,7 +184,7 @@ export function Sidebar() {
                   <Button
                     key={route.route}
                     variant="secondary"
-                    className="w-full justify-start mb-1"
+                    className="w-full justify-start"
                     onClick={() => router.push(route.route)}
                   >
                     <route.icon className="mr-2" />
@@ -195,7 +195,7 @@ export function Sidebar() {
                   <Button
                     key={route.name}
                     variant="secondary"
-                    className="w-full justify-start mb-1"
+                    className="w-full justify-start"
                     onClick={() => router.push(route.route)}
                   >
                     <route.icon className="mr-2" />
@@ -207,7 +207,7 @@ export function Sidebar() {
       </div>
 
       <div className="px-3 py-6 flex justify-center items-center">
-        <p className="px-2">Switch Mode</p>
+        <p className="px-2 text-white">Switch Mode</p>
         <div
           onClick={toggleMode}
           className="border rounded-md cursor-pointer overflow-hidden flex"
