@@ -6,6 +6,7 @@ import { app } from "@/firebase/firebaseConfig";
 import { Creator } from "@/lib/interfaces";
 import { Card, CardTitle, CardContent } from "@/ui/card";
 import { Progress } from "@/ui/progress";
+import Link from "next/link";
 
 const db = getFirestore(app);
 
@@ -81,6 +82,7 @@ function TrendingCreators({ creator }: { creator: Creator }) {
       .join(" "); // Join the parts back together
   }
   return (
+    <Link href={`/fan/bond/${creator.bond?.contract_address}`}>
     <Card className="flex flex-col items-center flex-shrink-0 p-4">
       <img
         src={creator.image || "https://via.placeholder.com/150"}
@@ -102,6 +104,7 @@ function TrendingCreators({ creator }: { creator: Creator }) {
         </div>
       </CardContent>
     </Card>
+    </Link>
   );
 }
 
@@ -113,36 +116,28 @@ function TopCreators({ creator }: { creator: Creator }) {
       .join(" "); // Join the parts back together
   }
   return (
-    <div
-      className="flex-none"
-      style={{ minWidth: "350px", marginRight: "20px" }}
-    >
-      <Card
-        className="flex flex-col justify-between items-center flex-shrink-0 p-10 gap-4"
-        style={{ minHeight: "300px" }}
-      >
-        <div className="flex flex-row justify-between items-center w-full">
-          <img
-            src={creator.image || "https://via.placeholder.com/150"}
-            alt={creator.name!}
-            className="w-25 h-25 object-cover rounded-full"
-          />
-          <div className="flex flex-col justify-center">
-            <CardTitle className="text-center">
-              {capitalizeName(creator.name!)}
-            </CardTitle>
-            <CardContent className="text-center pt-3">
-              <p>{creator.bond?.principal_fee} XTZ</p>
-              <p>{(creator.bond?.revenue_share || 0) * 100}%</p>
-              <p>{creator.bond?.coupon_interval} Months</p>
-            </CardContent>
+    
+    <Link href={`/fan/bond/${creator.bond?.contract_address}`}>
+      <div className="flex-none" style={{ minWidth: "350px", marginRight: "20px" }}>
+        <Card className="flex flex-col justify-between items-center flex-shrink-0 p-10 gap-4" style={{ minHeight: "300px" }}>
+          <div className="flex flex-row justify-between items-center w-full">
+            <img
+              src={creator.image || "https://via.placeholder.com/150"}
+              className="w-25 h-25 object-cover rounded-full"
+            />
+            <div className="flex flex-col justify-center">
+              <CardTitle className="text-center">{creator.name}</CardTitle>
+              <CardContent className="text-center pt-3">
+                <p>{creator.bond?.principal_fee} XTZ</p>
+                <p>{(creator.bond?.revenue_share || 0) * 100}%</p>
+                <p>{creator.bond?.coupon_interval} Months</p>
+              </CardContent>
+            </div>
           </div>
-        </div>
-        <Progress
-          value={Math.floor(Math.random() * 100) + 1}
-          className="w-full"
-        />
-      </Card>
+          <Progress value={Math.floor(Math.random() * 100) + 1} className="w-full" />
+        </Card>
+      
     </div>
+    </Link>
   );
 }
