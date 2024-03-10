@@ -23,10 +23,11 @@ export default function MerchDiscover() {
             fetchedMerch.push({
               contract_address: data.contract_address || null,
               merchItems: data.merchandise.merchItems,
+              creatorName: data.name,
             });
           }
         });
-        
+
         setMerch(fetchedMerch);
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -57,7 +58,7 @@ export default function MerchDiscover() {
 function TrendingMerch({ merch, cardLayout, imageLayout }: { merch: Merchandise, cardLayout: string, imageLayout: string }) {
   return (
     <Card className={cardLayout}>
-      <CardTitle>Merchandise from {merch.contract_address}</CardTitle>
+      <CardTitle className="text-center">{merch.creatorName || "Unknown Artist"}</CardTitle>
       {(merch.merchItems || []).map((item, index) => (
         <div key={index} className="my-2 text-center">
           <p>{item.name} - {item.price}</p>

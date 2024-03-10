@@ -13,6 +13,7 @@ export interface Creator {
 export interface Merchandise {
   contract_address: string;
   merchItems: MerchItem[];
+  creatorName: string;
 }
 
 export interface SpotifyProfile {
