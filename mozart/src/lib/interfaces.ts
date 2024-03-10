@@ -6,6 +6,7 @@ export interface Creator {
   web3_wallet: string | null;
   bond: Bond | null;
   image: string | null;
+  ticketCollections: TicketCollection[];
 }
 
 export interface SpotifyProfile {
@@ -29,4 +30,11 @@ export interface Bond {
   expiry_date: number;
   coupon_interval: number;
   supplyCap: number;
+}
+
+export interface TicketCollection {
+  owner: string;
+  address: string;
+  commonIpfsUrl: string;
+  ticketPrice: string;
 }
