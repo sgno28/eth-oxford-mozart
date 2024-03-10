@@ -16,6 +16,7 @@ import { Progress } from "@/ui/progress";
 import { getBondByContractAddress } from "@/firebase/firebase-helpers";
 import { Bond } from "@/lib/interfaces";
 import { revenueShareContract } from "@/contracts/revenueShare";
+import { addPurchasedBond } from "@/firebase/addPurchasedBond";
 
 const contractABI = revenueShareContract.abi;
 
@@ -75,6 +76,11 @@ export default function BondPage() {
             (bond.principal_fee * purchaseAmount).toString()
           ),
         });
+        await addPurchasedBond(
+          await signer.getAddress(),
+          bondAddress,
+          purchaseAmount
+        );
         // Handle post-purchase logic here (e.g., update UI, show success message)
       } catch (error) {
         console.error("Purchase failed:", error);
