@@ -90,6 +90,32 @@ export async function getBondByContractAddress(contractAddress: string) {
     }
 }
 
+export async function getMerchByContractAddress(contractAddress: string) {
+    const creatorsRef = collection(db, "creators");
+    const merchQuery = query(creatorsRef, where("merchandise.contract_address", "==", contractAddress));
+    const querySnapshot = await getDocs(merchQuery);
+    
+    if (!querySnapshot.empty) {
+        const creatorDoc = querySnapshot.docs[0];
+        return creatorDoc.data().merchandise;
+    } else {
+        console.error("Bond not found in Firestore");
+    }
+}
+
+export async function getTicketByContractAddress(contractAddress: string) {
+    const creatorsRef = collection(db, "creators");
+    const ticketQuery = query(creatorsRef, where("ticketCollections.(need to iterate through tickets).address", "==", contractAddress));
+    const querySnapshot = await getDocs(ticketQuery);
+    
+    if (!querySnapshot.empty) {
+        const creatorDoc = querySnapshot.docs[0];
+        return creatorDoc.data().ticketCollections;
+    } else {
+        console.error("Ticket not found in Firestore");
+    }
+}
+
 export async function addBondToCreator(signerAddress: string, bond: Bond) {
     const creatorsRef = collection(db, "creators");
     console.log("Adding bond to creator in Firestore:", bond);

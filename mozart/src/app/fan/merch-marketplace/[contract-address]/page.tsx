@@ -13,42 +13,45 @@ import {
   CardDescription,
 } from "@/ui/card";
 import { Progress } from "@/ui/progress";
-import { getBondByContractAddress } from "@/firebase/firebase-helpers";
-import { Bond } from "@/lib/interfaces";
+import { Merchandise } from "@/lib/interfaces";
+import { getMerchByContractAddress } from "@/firebase/firebase-helpers";
 import { revenueShareContract } from "@/contracts/revenueShare";
-import { addPurchasedBond } from "@/firebase/addPurchasedBond";
-import { useWallet } from "@/app/contexts/WalletContext";
+import {addPurchasedMerch} from "@/firebase/addPurchasedMerch";
+
 
 const contractABI = revenueShareContract.abi;
 
-export default function BondPage() {
+export default function MerchPage() {
   const pathname = usePathname();
   const pathSegments = pathname.split("/");
-  const bondAddress = pathSegments[pathSegments.length - 1];
-  const [bond, setBond] = useState<Bond | null>(null);
+  const merchAddress = pathSegments[pathSegments.length - 1];
+  const [merch, setMerch] = useState<Merchandise | null>(null);
   const [purchaseAmount, setPurchaseAmount] = useState(1);
   const [progress, setProgress] = useState(0);
-  const { walletAddress } = useWallet();
 
   useEffect(() => {
-    const fetchBond = async () => {
-      const bondData: Bond = await getBondByContractAddress(bondAddress);
-      setBond(bondData);
-      // Placeholder for fetching total supply and calculating progress
-      const provider = new ethers.providers.Web3Provider(
-        (window as any).ethereum
-      );
-      const contract = new ethers.Contract(bondAddress, contractABI, provider);
-      const totalSupply = await contract.totalSupply();
-      const progressValue = (totalSupply.toNumber() / bondData.supplyCap) * 100;
-      setProgress(progressValue);
+    const fetchMerch = async () => {
+      const merchData: Merchandise = await getMerchByContractAddress(merchAddress);
+      if (merchData && merchData.merchItems.length > 0) { 
+        setMerch(merchData);
+        const provider = new ethers.providers.Web3Provider((window as any).ethereum);
+        const contract = new ethers.Contract(merchAddress, contractABI, provider);
+        const totalSupply = await contract.totalSupply();
+        // Ensure supplyCap is a number and not undefined
+        const supplyCap = Number(merchData.merchItems[0].supplyCap);
+        if (!isNaN(supplyCap) && supplyCap > 0) { // Check that supplyCap is a number and greater than 0
+          const progressValue = (totalSupply.toNumber() / supplyCap) * 100;
+          setProgress(progressValue);
+        }
+      }
     };
-
-    fetchBond();
-  }, [bondAddress]);
+  
+    fetchMerch();
+  }, [merchAddress]);
+  
 
   const handlePurchase = async () => {
-    if (bond && purchaseAmount > 0) {
+    if (merch && purchaseAmount > 0) {
       try {
         const provider = new ethers.providers.Web3Provider(
           (window as any).ethereum
@@ -56,7 +59,7 @@ export default function BondPage() {
         await provider.send("eth_requestAccounts", []);
         const signer = provider.getSigner();
         const contract = new ethers.Contract(
-          bond.contract_address,
+          merch.contract_address,
           contractABI,
           signer
         );
@@ -64,8 +67,8 @@ export default function BondPage() {
         console.log(
           "Purchasing",
           purchaseAmount,
-          "bond tokens for price",
-          bond.principal_fee * purchaseAmount,
+          "merch tokens for price",
+          Number(merch.merchItems[0].price) * purchaseAmount,
           "ETH"
         );
         console.log("Contract:", contract.address);
@@ -73,20 +76,15 @@ export default function BondPage() {
         const balance = await provider.getBalance(await signer.getAddress());
         console.log("Balance:", ethers.utils.formatEther(balance));
 
-        await contract.buyBondTokens(purchaseAmount, {
-          value: ethers.utils.parseEther(
-            (bond.principal_fee * purchaseAmount).toString()
-          ),
-        });
-
-        await addPurchasedBond(
-          walletAddress,
-          "BOND",
-          bondAddress,
-          purchaseAmount,
-          bond.principal_fee,
-          bond.revenue_share,
-          bond.supplyCap
+        // await contract.buyBondTokens(purchaseAmount, { NEED TO EDIT THIS FOR MERCH
+        //   value: ethers.utils.parseEther(
+        //     (Number(merch.merchItems[0].price) * purchaseAmount).toString()
+        //   ),
+        // });
+        await addPurchasedMerch(
+          await signer.getAddress(),
+          merchAddress,
+          purchaseAmount
         );
         // Handle post-purchase logic here (e.g., update UI, show success message)
       } catch (error) {
@@ -97,17 +95,17 @@ export default function BondPage() {
 
   return (
     <div className="w-full flex flex-col items-center justify-center space-y-4">
-      {bond && (
+      {merch && (
         <div className="pt-20">
           <Card>
             <CardHeader>
-              <CardTitle>{bond.contract_address}</CardTitle>
+              <CardTitle>{merch.contract_address}</CardTitle>
             </CardHeader>
             <CardContent>
-              <CardDescription>Price: {bond.principal_fee} ETH</CardDescription>
-              <CardDescription>Supply Cap: {bond.supplyCap}</CardDescription>
+              <CardDescription>Price: {merch.merchItems[0].price} ETH</CardDescription>
+              <CardDescription>Supply Cap: {merch.merchItems[0].supplyCap}</CardDescription>
               <CardDescription>
-                Revenue Share: {bond.revenue_share}%
+                Sold: {merch.merchItems[0].sold}
               </CardDescription>
               <Progress value={progress} max={100} />
             </CardContent>
