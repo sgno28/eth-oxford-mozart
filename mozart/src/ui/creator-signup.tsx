@@ -35,7 +35,6 @@ export function CreatorSignup() {
       console.log("Entered");
       (async () => {
         const profile: SpotifyProfile | null = await handleSpotifyAuthCallback(
-          spotifyClientId!
         );
         console.log("Spotify profile fetched:", profile);
 
@@ -63,7 +62,7 @@ export function CreatorSignup() {
   }, [isSpotifyConnected, spotifyProfile]);
 
   const handleSpotifyAuth = () => {
-    redirectToAuthCodeFlow(spotifyClientId!);
+    redirectToAuthCodeFlow();
   };
 
   const onSubmit = (event: FormEvent<HTMLFormElement>) => {

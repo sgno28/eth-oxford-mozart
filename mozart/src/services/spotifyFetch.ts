@@ -1,109 +1,124 @@
 import { SpotifyProfile } from "@/lib/interfaces";
 
-export async function redirectToAuthCodeFlow(clientId: string) {
-  const verifier = generateCodeVerifier(128);
-  const challenge = await generateCodeChallenge(verifier);
+const clientId: string | undefined = process.env.NEXT_PUBLIC_SPOTIFY_CLIENT_ID;
+const redirectUri: string = 'http://localhost:3000/creator';
 
-  localStorage.setItem("verifier", verifier);
-
-  const params = new URLSearchParams();
-  params.append("client_id", clientId);
-  params.append("response_type", "code");
-  params.append("redirect_uri", "http://localhost:3000/creator");
-  params.append("scope", "user-read-private user-read-email");
-  params.append("code_challenge_method", "S256");
-  params.append("code_challenge", challenge);
-
-  // Redirect to Spotify authorization page
-  window.location.href = `https://accounts.spotify.com/authorize?${params.toString()}`;
+function generateRandomString(length: number): string {
+  const array = new Uint8Array(length);
+  window.crypto.getRandomValues(array);
+  return Array.from(array, (byte) => byte.toString(36)).join('').substr(0, length);
 }
 
-function generateCodeVerifier(length: number) {
-  let text = "";
-  let possible =
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+async function sha256(plain: string): Promise<ArrayBuffer> {
+  const encoder = new TextEncoder();
+  const data = encoder.encode(plain);
+  return window.crypto.subtle.digest('SHA-256', data);
+}
 
-  for (let i = 0; i < length; i++) {
-    text += possible.charAt(Math.floor(Math.random() * possible.length));
+function base64urlencode(buffer: ArrayBuffer): string {
+  return btoa(String.fromCharCode.apply(null, Array.from(new Uint8Array(buffer))))
+    .replace(/\+/g, '-')
+    .replace(/\//g, '_')
+    .replace(/=+$/, '');
+}
+
+async function generateCodeChallenge(codeVerifier: string): Promise<string> {
+  const hashed = await sha256(codeVerifier);
+  return base64urlencode(hashed);
+}
+
+export async function redirectToAuthCodeFlow(): Promise<void> {
+  const codeVerifier = generateRandomString(128);
+  const codeChallenge = await generateCodeChallenge(codeVerifier);
+  localStorage.setItem('code_verifier', codeVerifier);
+
+  if (!clientId) {
+    console.error('Spotify Client ID is not set');
+    return;
   }
-  return text;
-}
 
-async function generateCodeChallenge(codeVerifier: string) {
-  const data = new TextEncoder().encode(codeVerifier);
-  const digest = await window.crypto.subtle.digest("SHA-256", data);
-  return btoa(String.fromCharCode.apply(null, [...new Uint8Array(digest)]))
-    .replace(/\+/g, "-")
-    .replace(/\//g, "_")
-    .replace(/=+$/, "");
-}
-
-export async function getAccessToken(
-  clientId: string,
-  code: string
-): Promise<string> {
-  const verifier = localStorage.getItem("verifier");
-  console.log("Verifier: ", verifier);
-
-  const params = new URLSearchParams();
-  params.append("client_id", clientId);
-  params.append("grant_type", "authorization_code");
-  params.append("code", code);
-  params.append("redirect_uri", "http://localhost:3000/creator");
-  params.append("code_verifier", verifier!);
-
-  const result = await fetch("https://accounts.spotify.com/api/token", {
-    method: "POST",
-    headers: { "Content-Type": "application/x-www-form-urlencoded" },
-    body: params,
+  const params = new URLSearchParams({
+    client_id: clientId,
+    response_type: 'code',
+    redirect_uri: redirectUri,
+    code_challenge_method: 'S256',
+    code_challenge: codeChallenge,
+    scope: 'user-read-private user-read-email',
   });
 
-  const { access_token } = await result.json();
-  return access_token;
+  window.location.href = `https://accounts.spotify.com/authorize?${params}`;
 }
 
-export async function fetchProfile(token: string): Promise<any> {
-  const result = await fetch("https://api.spotify.com/v1/me", {
-    method: "GET",
-    headers: { Authorization: `Bearer ${token}` },
+async function getAccessToken(code: string): Promise<string | null> {
+  const codeVerifier = localStorage.getItem('code_verifier') || '';
+
+  if (!clientId) {
+    console.error('Spotify Client ID is not set');
+    return null;
+  }
+
+  const params = new URLSearchParams({
+    client_id: clientId,
+    grant_type: 'authorization_code',
+    code: code,
+    redirect_uri: redirectUri,
+    code_verifier: codeVerifier,
   });
-  return await result.json();
-}
 
-export async function handleSpotifyAuthCallback(clientId: string) {
-  const params = new URLSearchParams(window.location.search);
-  const code = params.get("code");
-  if (code && clientId) {
-    try {
-      const accessToken = await getAccessToken(clientId, code);
-      localStorage.setItem("accessToken", accessToken);
-      console.log("Access token", accessToken);
-      const profile = await fetchProfile(accessToken);
-      console.log("inside", profile);
+  try {
+    const response = await fetch('https://accounts.spotify.com/api/token', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: params.toString(),
+    });
 
-      const res: SpotifyProfile = {
-        displayName: profile.display_name,
-        spotifyId: profile.id,
-        image: profile.images[0]?.url,
-      };
-
-      return res;
-    } catch (error) {
-      console.error("Error getting access token:", error);
-      const resError: SpotifyProfile = {
-        displayName: null,
-        spotifyId: null,
-        image: null,
-      };
-      return resError;
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
     }
-  } else {
-    console.error("Error: No authorization code or client ID provided.");
-    const resError: SpotifyProfile = {
-      displayName: null,
-      spotifyId: null,
-      image: null,
-    };
-    return resError;
+
+    const data = await response.json();
+    return data.access_token;
+  } catch (error) {
+    console.error('Error fetching access token:', error);
+    return null;
   }
+}
+
+export async function fetchProfile(token: string): Promise<SpotifyProfile> {
+  try {
+    const response = await fetch('https://api.spotify.com/v1/me', {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    return {
+      displayName: data.display_name,
+      spotifyId: data.id,
+      image: data.images[0]?.url || null,
+    };
+  } catch (error) {
+    console.error('Error fetching Spotify profile:', error);
+    return { displayName: null, spotifyId: null, image: null };
+  }
+}
+
+export async function handleSpotifyAuthCallback(): Promise<SpotifyProfile> {
+  const urlParams = new URLSearchParams(window.location.search);
+  const code = urlParams.get('code');
+
+  if (code) {
+    const accessToken = await getAccessToken(code);
+    if (accessToken) {
+      localStorage.setItem('accessToken', accessToken);
+      console.log('Access token:', accessToken);
+      return await fetchProfile(accessToken);
+    }
+  }
+
+  console.error('Error during Spotify auth callback. No code found in URL parameters.');
+  return { displayName: null, spotifyId: null, image: null };
 }
