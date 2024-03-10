@@ -18,10 +18,11 @@ export function CreatorSignup() {
   const [spotifyProfile, setSpotifyProfile] = useState<SpotifyProfile | null>(
     null
   );
-  const { walletButtonText, isWalletConnected, handleWalletLink } = useWallet();
+  const { isWalletConnected, walletAddress, walletButtonText } = useWallet();
 
   useEffect(() => {
     const code = new URLSearchParams(window.location.search).get("code");
+    console.log("wallet initial", isWalletConnected);
     if (code && !isSpotifyConnected && !spotifyProfile) {
       (async () => {
         const profile: SpotifyProfile | null = await handleSpotifyAuthCallback(
@@ -29,29 +30,26 @@ export function CreatorSignup() {
         );
         console.log("Spotify profile fetched:", profile);
 
-        if (profile && profile.spotifyId) {
+        if (profile && profile.spotifyId && isWalletConnected) {
           console.log("Spotify profile fetched:", profile);
           setSpotifyProfile(profile);
           setIsSpotifyConnected(true);
           setSpotifyButtonText("Spotify Connected");
-
-          // Clear the code from the URL
-          const newUrl = window.location.pathname;
-          window.history.pushState({}, "", newUrl);
-        }
-        if (isSpotifyConnected && profile && isWalletConnected) {
-          console.log("I have penetrated");
-          console.log(profile);
           addCreator({
             spotifyId: profile.spotifyId,
             name: profile.displayName,
             start_date: null,
             followers: null,
-            web3_wallet: walletButtonText,
+            web3_wallet: walletAddress,
             bond: null,
-            image: profile.image,
+            image: profile.image || null,
+            ticketCollections: [],
           });
+          // Clear the code from the URL
+          const newUrl = window.location.pathname;
+          window.history.pushState({}, "", newUrl);
         }
+        console.log(isSpotifyConnected, profile, isWalletConnected);
       })();
     }
   }, [isSpotifyConnected, spotifyProfile]);

@@ -118,14 +118,26 @@ export function Sidebar() {
     <div className="flex flex-col h-screen">
       <div className="flex-1 overflow-auto py-4 space-y-4">
         <div className="py-2">
-          <div className="flex px-3 items-center">
-            <div className="flex-grow">
-              <h2 className="text-lg font-semibold tracking-tight">
-                My {mode === "Fan" ? "Creators" : "Fans"}
-              </h2>
-              <p className="italic">{mode} View</p>
+          <div className="px-3 ">
+            <div className="px-4 ">
+              <div
+                className="cursor-pointer"
+                onClick={() => {
+                  const targetPath =
+                    mode === "Fan" ? "/fan/my-creators" : "/creator/my-bond";
+                  router.push(targetPath);
+                }}
+              >
+                <h2 className="text-lg font-semibold tracking-tight">
+                  My {mode === "Fan" ? "Creators" : "Fans"}
+                </h2>
+                <p className="italic">{mode} View</p>
+              </div>
+
+              <div className="pt-8">
+                <ConnectWalletButton></ConnectWalletButton>
+              </div>
             </div>
-            <ConnectWalletButton />
           </div>
 
           <Separator className="horizontal my-2"></Separator>
@@ -184,25 +196,34 @@ export function Sidebar() {
 }
 
 const ConnectWalletButton: FunctionComponent = () => {
-  const { walletButtonText, isWalletConnected, handleWalletLink } = useWallet();
+  const {
+    walletButtonText,
+    isWalletConnected,
+    walletAddress,
+    handleWalletLink,
+    handleWalletDisconnect, // Ensure this is destructured from useWallet()
+  } = useWallet();
+
+  const handleClick = () => {
+    if (isWalletConnected) {
+      handleWalletDisconnect();
+    } else {
+      handleWalletLink();
+    }
+  };
 
   function formatWalletAddress(address: string) {
     if (!address || address.length < 8) return address;
     const start = address.substring(0, 5);
-    const end = address.substring(address.length - 10);
+    const end = address.substring(address.length - 4); // Changed from -10 for consistency
     return `${start}...${end}`;
   }
 
   return (
-    <Button
-      type="button"
-      onClick={handleWalletLink}
-      disabled={isWalletConnected}
-      className="w-auto"
-    >
-      <p className="text-xs justify-center">
+    <Button type="button" onClick={handleClick}>
+      <p className="text-xs">
         {isWalletConnected
-          ? formatWalletAddress(walletButtonText)
+          ? `Disconnect (${formatWalletAddress(walletAddress)})` // Use walletAddress from useWallet()
           : walletButtonText}
       </p>
     </Button>
