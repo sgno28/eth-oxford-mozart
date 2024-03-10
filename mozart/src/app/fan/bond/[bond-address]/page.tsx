@@ -41,19 +41,24 @@ export default function BondPage() {
   const handlePurchase = async () => {
     if (bond && purchaseAmount > 0) {
       try {
-        setButtonLoading(true);
         const provider = new ethers.providers.Web3Provider((window as any).ethereum);
         await provider.send("eth_requestAccounts", []);
         const signer = provider.getSigner();
         const contract = new ethers.Contract(bond.contract_address, contractABI, signer);
+
+        console.log("Purchasing", purchaseAmount, "bond tokens for price", bond.principal_fee * purchaseAmount, "ETH");
+        console.log("Contract:", contract.address);
+        console.log("Provider:", await signer.getAddress());
+        const balance = await provider.getBalance(await signer.getAddress());
+        console.log("Balance:", ethers.utils.formatEther(balance));
+
         await contract.buyBondTokens(purchaseAmount, {
-          value: ethers.utils.parseEther((bond.principal_fee * purchaseAmount).toString())
+            value: ethers.utils.parseEther((bond.principal_fee * purchaseAmount).toString())
         });
-        setButtonLoading(false);
-      } catch (error) {
+        // Handle post-purchase logic here (e.g., update UI, show success message)
+    } catch (error) {
         console.error("Purchase failed:", error);
-        setButtonLoading(false);
-      }
+    }
     }
   };
 
