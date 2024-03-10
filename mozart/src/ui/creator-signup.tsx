@@ -18,7 +18,8 @@ export function CreatorSignup() {
   const [spotifyProfile, setSpotifyProfile] = useState<SpotifyProfile | null>(
     null
   );
-  const { walletButtonText, isWalletConnected, handleWalletLink } = useWallet();
+  const isWalletConnected = localStorage.getItem("isWalletConnected");
+  const walletButtonText = localStorage.getItem("walletButtonText");
 
   useEffect(() => {
     const code = new URLSearchParams(window.location.search).get("code");
@@ -30,20 +31,11 @@ export function CreatorSignup() {
         );
         console.log("Spotify profile fetched:", profile);
 
-        if (profile && profile.spotifyId) {
+        if (profile && profile.spotifyId && isWalletConnected) {
           console.log("Spotify profile fetched:", profile);
           setSpotifyProfile(profile);
           setIsSpotifyConnected(true);
           setSpotifyButtonText("Spotify Connected");
-
-          // Clear the code from the URL
-          const newUrl = window.location.pathname;
-          window.history.pushState({}, "", newUrl);
-        }
-        console.log(isSpotifyConnected, profile, isWalletConnected);
-        if (isSpotifyConnected && profile && isWalletConnected) {
-          console.log("I have penetrated");
-          console.log(profile);
           addCreator({
             spotifyId: profile.spotifyId,
             name: profile.displayName,
@@ -54,7 +46,11 @@ export function CreatorSignup() {
             image: profile.image || null,
             ticketCollections: [],
           });
+          // Clear the code from the URL
+          const newUrl = window.location.pathname;
+          window.history.pushState({}, "", newUrl);
         }
+        console.log(isSpotifyConnected, profile, isWalletConnected);
       })();
     }
   }, [isSpotifyConnected, spotifyProfile]);

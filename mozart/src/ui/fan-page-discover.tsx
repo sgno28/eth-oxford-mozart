@@ -61,11 +61,11 @@ function TrendingCreators({
     >
       <img
         src={creator.image || "https://via.placeholder.com/150"}
-        alt={creator.name}
+        alt={creator.name!}
         className="w-25 h-25 object-cover rounded-full mx-auto my-3" // Increased size, added margin, and centered
       />
       <CardTitle className="text-center">
-        {capitalizeName(creator.name)}
+        {capitalizeName(creator.name!)}
       </CardTitle>
       <CardContent className="flex items-center justify-center space-x-4 pt-3">
         <div>
@@ -102,12 +102,12 @@ function TopCreators({ creator, index }: { creator: Creator; index: number }) {
         <div className="flex flex-row justify-between items-center w-full">
           <img
             src={creator.image || "https://via.placeholder.com/150"}
-            alt={creator.name}
+            alt={creator.name!}
             className="w-25 h-25 object-cover rounded-full"
           />
           <div className="flex flex-col justify-center">
             <CardTitle className="text-center">
-              {capitalizeName(creator.name)}
+              {capitalizeName(creator.name!)}
             </CardTitle>
             <CardContent className="text-center pt-3">
               <p>{creator.bond!.principal_fee} XTZ</p>

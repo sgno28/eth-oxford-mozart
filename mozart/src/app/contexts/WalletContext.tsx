@@ -1,10 +1,11 @@
-// WalletContext.tsx
+"use client";
 import React, {
   createContext,
   useContext,
   ReactNode,
   useState,
   FunctionComponent,
+  useEffect,
 } from "react";
 
 interface WalletContextType {
@@ -32,10 +33,26 @@ interface WalletProviderProps {
 export const WalletProvider: FunctionComponent<WalletProviderProps> = ({
   children,
 }) => {
-  const [isWalletConnected, setIsWalletConnected] = useState<boolean>(false);
-  const [walletAddress, setWalletAddress] = useState<string>("");
-  const [walletButtonText, setWalletButtonText] =
-    useState<string>("Link Wallet");
+  // Initialize state from localStorage, or use defaults
+  const [isWalletConnected, setIsWalletConnected] = useState<boolean>(
+    localStorage.getItem("isWalletConnected") === "true"
+  );
+  const [walletAddress, setWalletAddress] = useState<string>(
+    localStorage.getItem("walletAddress") || ""
+  );
+  const [walletButtonText, setWalletButtonText] = useState<string>(
+    localStorage.getItem("walletButtonText") || "Link Wallet"
+  );
+
+  useEffect(() => {
+    // Persist state changes to localStorage
+    localStorage.setItem(
+      "isWalletConnected",
+      JSON.stringify(isWalletConnected)
+    );
+    localStorage.setItem("walletAddress", walletAddress);
+    localStorage.setItem("walletButtonText", walletButtonText);
+  }, [isWalletConnected, walletAddress, walletButtonText]); // Only re-run the effect if these values change
 
   const handleWalletLink = async () => {
     if (window.ethereum) {
@@ -45,7 +62,7 @@ export const WalletProvider: FunctionComponent<WalletProviderProps> = ({
         });
         setWalletAddress(accounts[0]);
         setIsWalletConnected(true);
-        setWalletButtonText(accounts[0]);
+        setWalletButtonText(accounts[0]); // You might want to change this to a more descriptive text
         console.log(
           "Connected wallet account:",
           accounts[0],
