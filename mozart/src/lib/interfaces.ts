@@ -1,6 +1,6 @@
 export interface Creator {
   spotifyId: string | null;
-  name: string | null;
+  name: string;
   start_date: number | null;
   followers: number | null;
   web3_wallet: string | null;
